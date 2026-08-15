@@ -1,0 +1,137 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+
+{% block extrahead %}
+{{ block.super }}
+<meta name="referrer" content="unsafe-url">
+{% endblock %}
+
+{% block after_field_sets %}
+{{ block.super }}
+<!-- 지도 위젯 삽입 영역 -->
+<div style="margin: 20px 0; padding: 15px; border: 1px solid #ccc; background: white; border-radius: 5px;">
+    <h3 style="margin-top: 0; color: #333; font-size: 14px; font-weight: bold; margin-bottom: 10px;">🗺️ 위치 선택 도우미</h3>
+    <div style="margin-bottom: 10px; display: flex; gap: 10px;">
+        <input type="text" id="address-search" placeholder="주소를 검색하세요 (예: 강남대로 396)" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        <button type="button" id="search-btn" style="background: #03c75a; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">주소 검색</button>
+    </div>
+    <div id="admin-map" style="width: 100%; height: 350px; background: #e9ecef; border: 1px solid #ccc; border-radius: 4px;"></div>
+    <p style="margin-top: 8px; color: #666; font-size: 12px; margin-bottom: 0;">* 지도를 마우스로 클릭하면 화면 위쪽의 '위도'와 '경도' 칸에 값이 자동으로 입력됩니다.</p>
+</div>
+
+<script>
+(function() {
+    function initAdminMap() {
+        const latInput = document.getElementById("id_latitude");
+        const lngInput = document.getElementById("id_longitude");
+        
+        if (!latInput || !lngInput) {
+            alert("⚠️ 위도(id_latitude) 또는 경도(id_longitude) 필드를 찾을 수 없습니다! 모델이나 폼 설정을 확인해주세요.");
+            return; 
+        }
+        
+        let initLat = 37.5666102;
+        let initLng = 126.9783881;
+        let zoomLevel = 11;
+        
+        if (latInput.value && lngInput.value) {
+            initLat = parseFloat(latInput.value);
+            initLng = parseFloat(lngInput.value);
+            zoomLevel = 15;
+        }
+        
+        try {
+            const center = new naver.maps.LatLng(initLat, initLng);
+            const map = new naver.maps.Map("admin-map", {
+                center: center,
+                zoom: zoomLevel,
+            });
+            
+            let marker = null;
+            if (latInput.value && lngInput.value) {
+                marker = new naver.maps.Marker({
+                    position: center, map: map, animation: naver.maps.Animation.DROP
+                });
+            }
+
+            naver.maps.Event.addListener(map, 'click', function(e) {
+                latInput.value = e.coord.lat();
+                lngInput.value = e.coord.lng();
+                
+                if (marker) {
+                    marker.setPosition(e.coord);
+                } else {
+                    marker = new naver.maps.Marker({
+                        position: e.coord, map: map, animation: naver.maps.Animation.DROP
+                    });
+                }
+            });
+        } catch (error) {
+            alert("⚠️ 지도 생성 중 에러 발생: " + error.message);
+        }
+
+        const searchBtn = document.getElementById("search-btn");
+        const searchInput = document.getElementById("address-search");
+
+        searchBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            const address = searchInput.value;
+            if (!address) return;
+            
+            if (!naver.maps.Service || !naver.maps.Service.geocode) {
+                alert("네이버 지도 Geocoding 서비스가 준비되지 않았습니다. API 설정을 확인해주세요.");
+                return;
+            }
+            
+            naver.maps.Service.geocode({ query: address }, function(status, response) {
+                if (status !== naver.maps.Service.Status.OK) {
+                    return alert('주소 검색에 실패했습니다. (상태: ' + status + ')');
+                }
+                if (response.v2.meta.totalCount === 0) {
+                    return alert('해당 주소를 찾을 수 없습니다.');
+                }
+                
+                const item = response.v2.addresses[0];
+                const point = new naver.maps.Point(item.x, item.y);
+                
+                map.setCenter(point);
+                map.setZoom(16);
+                
+                latInput.value = item.y;
+                lngInput.value = item.x;
+                
+                if (marker) {
+                    marker.setPosition(point);
+                } else {
+                    marker = new naver.maps.Marker({
+                        position: point, map: map, animation: naver.maps.Animation.DROP
+                    });
+                }
+            });
+        });
+        
+        searchInput.addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                searchBtn.click();
+            }
+        });
+    }
+
+    // 스크립트 동적 로드 (에러 감지 목적)
+    if (window.naver && window.naver.maps) {
+        initAdminMap();
+    } else {
+        const script = document.createElement('script');
+        script.src = "https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=kf3oivuas3&submodules=geocoder";
+        script.onload = function() {
+            setTimeout(initAdminMap, 200); // 로드 직후 초기화를 위한 약간의 지연
+        };
+        script.onerror = function() {
+            alert("⚠️ 네이버 지도 API를 불러오지 못했습니다. \n\n원인 1. 네이버 클라우드에 Web 서비스 URL(http://127.0.0.1:8000)이 등록되지 않음\n원인 2. Client ID가 잘못됨");
+        };
+        document.head.appendChild(script);
+    }
+})();
+</script>
+{% endblock %}

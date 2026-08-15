@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="unsafe-url">
+    <title>광고 지도 플랫폼</title>
+    <!-- 네이버 지도 API 스크립트 -->
+    <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId={{ naver_client_id }}"></script>
+    <style>
+        :root {
+            --primary: #03c75a; /* 네이버 시그니처 그린 */
+            --background: #f8f9fa;
+            --border: #e9ecef;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background-color: var(--background);
+        }
+        /* 왼쪽 사이드바 (광고 리스트) */
+        .sidebar {
+            width: 380px;
+            background: #ffffff;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sidebar-header h1 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+        .admin-link {
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 6px 12px;
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .admin-link:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        .ad-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        .ad-item {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .ad-item:hover {
+            background-color: #f8f9fa;
+        }
+        .ad-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+        .ad-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        
+        /* 오른쪽 지도 영역 */
+        .map-container {
+            flex: 1;
+            position: relative;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* 인포윈도우 커스텀 */
+        .info-window {
+            padding: 15px;
+            min-width: 220px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .info-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+            color: var(--text-dark);
+        }
+        .info-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>광고 리스트</h1>
+            <a href="/admin/" class="admin-link" target="_blank">관리자 페이지</a>
+        </div>
+        <ul class="ad-list" id="ad-list">
+            <!-- 자바스크립트로 리스트 렌더링 -->
+        </ul>
+    </div>
+
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+
+    <script>
+        // 백엔드에서 전달받은 광고 JSON 데이터
+        const adsData = JSON.parse('{{ ads_json|escapejs }}');
+        
+        // 지도 초기화 (서울 시청 중심)
+        const mapOptions = {
+            center: new naver.maps.LatLng(37.5666102, 126.9783881),
+            zoom: 13,
+            minZoom: 7,
+        };
+        const map = new naver.maps.Map('map', mapOptions);
+
+        const markers = [];
+        const infoWindows = [];
+        const adListEl = document.getElementById('ad-list');
+
+        if (adsData.length === 0) {
+            adListEl.innerHTML = '<div class="empty-state">등록된 광고가 없습니다.<br>우측 상단 관리자 페이지에서<br>광고를 등록해주세요.</div>';
+        }
+
+        // 광고 데이터를 순회하며 리스트 및 마커 생성
+        adsData.forEach((ad, index) => {
+            const position = new naver.maps.LatLng(ad.latitude, ad.longitude);
+            
+            // 1. 마커 생성
+            const marker = new naver.maps.Marker({
+                position: position,
+                map: map,
+                title: ad.title,
+                animation: naver.maps.Animation.DROP
+            });
+            markers.push(marker);
+
+            // 2. 인포윈도우 생성
+            const infoContent = `
+                <div class="info-window">
+                    <div class="info-title">${ad.title}</div>
+                    <div class="info-desc">${ad.description.replace(/\\n/g, '<br>')}</div>
+                </div>
+            `;
+            const infoWindow = new naver.maps.InfoWindow({
+                content: infoContent,
+                borderWidth: 0,
+                backgroundColor: "transparent",
+                disableAnchor: true,
+                pixelOffset: new naver.maps.Point(0, -10)
+            });
+            infoWindows.push(infoWindow);
+
+            // 마커 클릭 이벤트
+            naver.maps.Event.addListener(marker, "click", function(e) {
+                if (infoWindow.getMap()) {
+                    infoWindow.close();
+                } else {
+                    infoWindows.forEach(iw => iw.close());
+                    infoWindow.open(map, marker);
+                    map.panTo(position);
+                }
+            });
+
+            // 3. 사이드바 리스트 아이템 생성
+            const li = document.createElement('li');
+            li.className = 'ad-item';
+            li.innerHTML = `
+                <div class="ad-title">${ad.title}</div>
+                <div class="ad-desc">${ad.description}</div>
+            `;
+            // 리스트 아이템 클릭 이벤트 (지도로 이동)
+            li.addEventListener('click', () => {
+                map.panTo(position);
+                map.setZoom(15);
+                infoWindows.forEach(iw => iw.close());
+                infoWindow.open(map, marker);
+            });
+            adListEl.appendChild(li);
+        });
+        
+        // 데이터가 1개 이상이면 모든 마커가 보이도록 지도 바운더리 조정
+        if(adsData.length > 0) {
+            const bounds = new naver.maps.LatLngBounds();
+            adsData.forEach(ad => {
+                bounds.extend(new naver.maps.LatLng(ad.latitude, ad.longitude));
+            });
+            map.fitBounds(bounds);
+        }
+    </script>
+</body>
+</html>
