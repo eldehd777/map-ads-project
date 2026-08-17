@@ -2,9 +2,24 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Image as ImageIcon, Plus, Trash2, Calendar, MapPin, Store, Tag } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Image as ImageIcon, Plus, Trash2, Calendar, MapPin, Store, Tag, Loader2 } from "lucide-react";
 
 export default function CreateCampaignPage() {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      alert("캠페인이 성공적으로 등록되었습니다!");
+      router.push("/campaigns/manage");
+    }, 1000);
+  };
+
   return (
     <div className="flex-1 bg-slate-50 overflow-y-auto">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -20,7 +35,7 @@ export default function CreateCampaignPage() {
           </div>
         </div>
 
-        <form className="space-y-8 pb-24">
+        <form onSubmit={handleSubmit} className="space-y-8 pb-24">
           
           {/* Section 1: Basic Info */}
           <section className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm">
@@ -158,11 +173,26 @@ export default function CreateCampaignPage() {
         {/* Fixed Bottom Bar */}
         <div className="fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-40">
           <div className="max-w-4xl mx-auto flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
-            <button className="px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors w-full sm:w-auto">
+            <button 
+              type="button"
+              disabled={isSubmitting}
+              className="px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors w-full sm:w-auto disabled:opacity-50"
+            >
               임시저장
             </button>
-            <button className="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-600/20 transition-all w-full sm:w-auto">
-              등록 완료하기
+            <button 
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center justify-center gap-2 px-8 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-600/20 transition-all w-full sm:w-auto disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  등록 중...
+                </>
+              ) : (
+                "등록 완료하기"
+              )}
             </button>
           </div>
         </div>
