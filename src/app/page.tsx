@@ -8,15 +8,31 @@ export default function Home() {
 
   useEffect(() => {
     // Initialize Naver Map
-    // @ts-ignore
-    if (window.naver && window.naver.maps && mapRef.current) {
-      const mapOptions = {
-        // @ts-ignore
-        center: new window.naver.maps.LatLng(37.3595704, 127.105399),
-        zoom: 14
-      };
+    const initMap = () => {
       // @ts-ignore
-      new window.naver.maps.Map(mapRef.current, mapOptions);
+      if (window.naver && window.naver.maps && mapRef.current) {
+        const mapOptions = {
+          // @ts-ignore
+          center: new window.naver.maps.LatLng(37.3595704, 127.105399),
+          zoom: 14
+        };
+        // @ts-ignore
+        new window.naver.maps.Map(mapRef.current, mapOptions);
+      }
+    };
+
+    // @ts-ignore
+    if (window.naver && window.naver.maps) {
+      initMap();
+    } else {
+      const timer = setInterval(() => {
+        // @ts-ignore
+        if (window.naver && window.naver.maps) {
+          initMap();
+          clearInterval(timer);
+        }
+      }, 100);
+      return () => clearInterval(timer);
     }
   }, []);
 
@@ -88,7 +104,7 @@ export default function Home() {
       
       {/* Map View */}
       <div className="hidden md:flex flex-1 bg-slate-100 relative items-center justify-center">
-        <div ref={mapRef} className="absolute inset-0 z-0" />
+        <div id="map" ref={mapRef} className="absolute inset-0 z-0 w-full h-full" />
       </div>
     </div>
   );
