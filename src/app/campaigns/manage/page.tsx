@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Plus, Search, Filter, MoreVertical, Users, Eye, TrendingUp, Calendar } from "lucide-react";
 
 const DUMMY_CAMPAIGNS = [
@@ -20,10 +21,10 @@ export default function CampaignsManagePage() {
             <h1 className="text-3xl font-bold text-slate-900 mb-2">캠페인 관리</h1>
             <p className="text-slate-500">진행 중인 캠페인의 성과를 확인하고 신청자를 관리하세요.</p>
           </div>
-          <button className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all shrink-0">
+          <Link href="/campaigns/create" className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all shrink-0">
             <Plus className="w-5 h-5" />
             새 캠페인 등록
-          </button>
+          </Link>
         </div>
 
         {/* Overview Cards */}

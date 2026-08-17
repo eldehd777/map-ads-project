@@ -14,11 +14,12 @@ const DUMMY_SNAPSHOTS = [
 
 export default function SnapshotsPage() {
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  const [selectedSnapshot, setSelectedSnapshot] = useState<any>(null);
 
   const filteredSnapshots = DUMMY_SNAPSHOTS.filter(s => filter === "all" || s.status === filter);
 
   return (
-    <div className="flex-1 bg-slate-50 overflow-y-auto">
+    <div className="flex-1 bg-slate-50 overflow-y-auto relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Header & Stats */}
@@ -81,7 +82,11 @@ export default function SnapshotsPage() {
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredSnapshots.map((snapshot) => (
-            <div key={snapshot.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:shadow-slate-200/50 transition-all group">
+            <div 
+              key={snapshot.id} 
+              onClick={() => setSelectedSnapshot(snapshot)}
+              className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:shadow-slate-200/50 transition-all group cursor-pointer"
+            >
               <div className="relative aspect-square bg-slate-100 overflow-hidden">
                 <img 
                   src={snapshot.image} 
@@ -91,30 +96,18 @@ export default function SnapshotsPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
                 {snapshot.status === "pending" && (
-                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-blue-500 text-white text-xs font-bold uppercase rounded-lg shadow-sm">
+                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-blue-500 text-white text-xs font-bold uppercase rounded-lg shadow-sm z-10">
                     대기중
                   </div>
                 )}
                 {snapshot.status === "approved" && (
-                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-green-500 text-white text-xs font-bold uppercase rounded-lg shadow-sm">
+                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-green-500 text-white text-xs font-bold uppercase rounded-lg shadow-sm z-10">
                     승인됨
                   </div>
                 )}
                 {snapshot.status === "rejected" && (
-                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-red-500 text-white text-xs font-bold uppercase rounded-lg shadow-sm">
+                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-red-500 text-white text-xs font-bold uppercase rounded-lg shadow-sm z-10">
                     반려됨
-                  </div>
-                )}
-
-                {/* Hover Actions */}
-                {snapshot.status === "pending" && (
-                  <div className="absolute bottom-4 left-0 w-full px-4 flex gap-2 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                    <button className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-green-500 hover:bg-green-600 text-white text-sm font-bold rounded-xl backdrop-blur-md">
-                      <Check className="w-4 h-4" /> 승인
-                    </button>
-                    <button className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-xl backdrop-blur-md">
-                      <X className="w-4 h-4" /> 반려
-                    </button>
                   </div>
                 )}
               </div>
@@ -137,6 +130,74 @@ export default function SnapshotsPage() {
         </div>
 
       </div>
+
+      {/* Snapshot Detail Modal */}
+      {selectedSnapshot && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setSelectedSnapshot(null)} />
+          
+          <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+            <button onClick={() => setSelectedSnapshot(null)} className="absolute top-4 right-4 z-20 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full backdrop-blur-md transition-colors">
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Left Full Image */}
+            <div className="w-full md:w-3/5 h-[50vh] md:h-[80vh] bg-slate-100 relative shrink-0">
+              <img src={selectedSnapshot.image} alt="Snapshot Original" className="absolute inset-0 w-full h-full object-contain bg-black" />
+            </div>
+
+            {/* Right Info & Actions */}
+            <div className="p-6 sm:p-8 flex-1 overflow-y-auto bg-slate-50 flex flex-col">
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  {selectedSnapshot.status === "pending" && <span className="px-2.5 py-1 bg-blue-100 text-blue-700 text-xs font-bold uppercase rounded-lg">대기중</span>}
+                  {selectedSnapshot.status === "approved" && <span className="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-bold uppercase rounded-lg">승인됨</span>}
+                  {selectedSnapshot.status === "rejected" && <span className="px-2.5 py-1 bg-red-100 text-red-700 text-xs font-bold uppercase rounded-lg">반려됨</span>}
+                  <span className="text-sm font-medium text-slate-500">{selectedSnapshot.date}</span>
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">{selectedSnapshot.campaign}</h2>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-slate-200 overflow-hidden">
+                    <img src={`https://picsum.photos/100/100?random=${selectedSnapshot.id}`} alt="creator" />
+                  </div>
+                  <span className="font-semibold text-slate-700">{selectedSnapshot.creator}</span>
+                </div>
+              </div>
+
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 mb-6 flex-1">
+                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">작성 내용</h3>
+                <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                  이번에 새로 나온 메뉴 진짜 미쳤어요ㅠㅠ 꼭 드셔보세요! 분위기도 완전 좋아서 데이트 코스로 강추합니다 ❤️
+                </p>
+                <div className="text-blue-600 text-sm font-medium space-x-1">
+                  <span>#강남맛집</span>
+                  <span>#데이트코스</span>
+                  <span>#신메뉴출시</span>
+                </div>
+              </div>
+
+              {selectedSnapshot.status === "pending" ? (
+                <div className="flex gap-3 pt-6 border-t border-slate-200 shrink-0">
+                  <button className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-xl transition-colors border border-red-200">
+                    <X className="w-5 h-5" />
+                    반려하기
+                  </button>
+                  <button className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg shadow-green-600/20 transition-all border border-green-600">
+                    <Check className="w-5 h-5" />
+                    승인하기
+                  </button>
+                </div>
+              ) : (
+                <div className="pt-6 border-t border-slate-200 shrink-0">
+                  <button onClick={() => setSelectedSnapshot(null)} className="w-full py-3.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition-colors">
+                    닫기
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
