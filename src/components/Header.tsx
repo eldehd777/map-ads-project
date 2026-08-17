@@ -11,6 +11,7 @@ export default function Header() {
   const [mode, setMode] = useState<"creator" | "brand" | "admin">("creator");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   // Sync mode based on current URL path
   useEffect(() => {
@@ -35,11 +36,12 @@ export default function Header() {
               className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity"
             >
               <span className="text-xl font-black tracking-tight text-slate-900">Hell Ads</span>
-              <div className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 transition-colors px-2.5 py-1.5 rounded-lg border border-slate-200">
-                {mode === "creator" && <><User className="w-3.5 h-3.5 text-blue-600" /><span className="text-xs font-bold text-slate-700">크리에이터</span></>}
-                {mode === "brand" && <><Store className="w-3.5 h-3.5 text-indigo-600" /><span className="text-xs font-bold text-slate-700">광고주</span></>}
-                {mode === "admin" && <><Shield className="w-3.5 h-3.5 text-red-600" /><span className="text-xs font-bold text-slate-700">어드민</span></>}
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
+              <span className="text-xl font-light text-slate-300 hidden sm:inline">/</span>
+              <div className="flex items-center gap-1.5 text-slate-600 hover:text-slate-900 transition-colors">
+                {mode === "creator" && <span className="text-sm font-bold">크리에이터</span>}
+                {mode === "brand" && <span className="text-sm font-bold">광고주</span>}
+                {mode === "admin" && <span className="text-sm font-bold text-red-600">어드민</span>}
+                <ChevronDown className="w-4 h-4 text-slate-400" />
               </div>
             </button>
 
@@ -89,11 +91,33 @@ export default function Header() {
         </div>
         
         <div className="flex items-center gap-3">
+          {/* Profile Dropdown */}
+          <div className="relative">
+            <button 
+              onClick={() => setIsProfileOpen(!isProfileOpen)} 
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-slate-900 text-white font-bold shadow-sm hover:scale-105 transition-transform"
+            >
+              C
+            </button>
+            {isProfileOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
+                <div className="absolute top-full right-0 mt-2 w-48 bg-white shadow-xl rounded-2xl border border-slate-100 py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
+                  <div className="px-4 py-3 border-b border-slate-50 mb-1">
+                    <p className="text-sm font-bold text-slate-900">Charles</p>
+                    <p className="text-xs text-slate-500">charles@example.com</p>
+                  </div>
+                  <Link href="/profile" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700">프로필 수정</Link>
+                  <Link href="/insights" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700">인사이트 보기</Link>
+                  <div className="h-px bg-slate-100 my-1" />
+                  <button onClick={() => setIsProfileOpen(false)} className="w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-red-600">로그아웃</button>
+                </div>
+              </>
+            )}
+          </div>
+
           <button className="flex sm:hidden p-2 text-slate-600" onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}>
             <Menu className="w-6 h-6" />
-          </button>
-          <button className="hidden sm:flex items-center justify-center w-9 h-9 rounded-full bg-slate-900 text-white font-bold shadow-sm hover:scale-105 transition-transform">
-            C
           </button>
         </div>
       </div>

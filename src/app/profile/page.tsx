@@ -13,7 +13,7 @@ const DUMMY_FRIENDS = [
 ];
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<"friends" | "activity">("friends");
+  const [activeTab, setActiveTab] = useState<"friends" | "activity" | "insights">("insights");
 
   return (
     <div className="flex-1 bg-slate-50 overflow-y-auto">
@@ -72,26 +72,88 @@ export default function ProfilePage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-8 border-b border-slate-200 mb-8 px-2">
+        <div className="flex items-center gap-8 border-b border-slate-200 mb-8 px-2 overflow-x-auto no-scrollbar">
+          <button 
+            onClick={() => setActiveTab("insights")}
+            className={`pb-4 text-base font-semibold transition-colors relative whitespace-nowrap ${activeTab === "insights" ? "text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
+          >
+            인사이트 대시보드
+            {activeTab === "insights" && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-t-full" />}
+          </button>
           <button 
             onClick={() => setActiveTab("friends")}
-            className={`pb-4 text-base font-semibold transition-colors relative ${activeTab === "friends" ? "text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
+            className={`pb-4 text-base font-semibold transition-colors relative whitespace-nowrap ${activeTab === "friends" ? "text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
           >
             내 친구 목록
             {activeTab === "friends" && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-t-full" />}
           </button>
           <button 
             onClick={() => setActiveTab("activity")}
-            className={`pb-4 text-base font-semibold transition-colors relative ${activeTab === "activity" ? "text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
+            className={`pb-4 text-base font-semibold transition-colors relative whitespace-nowrap ${activeTab === "activity" ? "text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
           >
             최근 활동
             {activeTab === "activity" && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-t-full" />}
           </button>
         </div>
 
-        {/* Content */}
-        {activeTab === "friends" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {activeTab === "insights" ? (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Key Metrics */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h4 className="text-slate-500 text-sm font-medium mb-2">이번 달 총 노출수 (Reach)</h4>
+                <div className="flex items-end gap-3">
+                  <span className="text-3xl font-black text-slate-900">845.2K</span>
+                  <span className="text-sm font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-md mb-1">+12.5%</span>
+                </div>
+              </div>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h4 className="text-slate-500 text-sm font-medium mb-2">평균 클릭 전환율 (CTR)</h4>
+                <div className="flex items-end gap-3">
+                  <span className="text-3xl font-black text-slate-900">4.8%</span>
+                  <span className="text-sm font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-md mb-1">+0.8%</span>
+                </div>
+              </div>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-10" />
+                <h4 className="text-slate-500 text-sm font-medium mb-2">이번 달 예상 수익</h4>
+                <div className="flex items-end gap-3">
+                  <span className="text-3xl font-black text-blue-600">₩1,250,000</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Chart Area */}
+            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-lg font-bold text-slate-900">주간 트래픽 추이</h3>
+                <select className="bg-slate-50 border border-slate-200 text-slate-600 text-sm rounded-lg px-3 py-1.5 focus:outline-none">
+                  <option>최근 7일</option>
+                  <option>이번 달</option>
+                </select>
+              </div>
+              <div className="h-64 flex items-end justify-between gap-2 sm:gap-4 px-2 sm:px-6">
+                {/* Dummy Bar Chart */}
+                {[40, 65, 45, 80, 55, 95, 70].map((height, i) => (
+                  <div key={i} className="flex flex-col items-center flex-1 gap-3 group">
+                    <div className="w-full bg-slate-100 rounded-t-lg relative h-full flex items-end group-hover:bg-slate-200 transition-colors">
+                      <div 
+                        className="w-full bg-blue-500 rounded-t-lg transition-all duration-1000 ease-out"
+                        style={{ height: `${height}%` }}
+                      >
+                        <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs py-1 px-2 rounded font-medium transition-opacity">
+                          {height * 123}
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-xs font-medium text-slate-400">{["월", "화", "수", "목", "금", "토", "일"][i]}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : activeTab === "friends" ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {DUMMY_FRIENDS.map(friend => (
               <div key={friend.id} className="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-lg hover:border-blue-200 transition-all group cursor-pointer">
                 <div className="flex items-center justify-between mb-4">
@@ -120,7 +182,7 @@ export default function ProfilePage() {
             ))}
           </div>
         ) : (
-          <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center">
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Award className="w-10 h-10 text-slate-400" />
             </div>
