@@ -134,9 +134,14 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row h-full">
-      {/* Sidebar / List View */}
-      <div className="w-full md:w-[480px] lg:w-[600px] flex flex-col border-r border-slate-200 bg-white h-[calc(100vh-4rem)] overflow-hidden shrink-0">
+    <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)] overflow-hidden">
+      {/* Map View (Top on mobile, Right on desktop) */}
+      <div className="w-full h-[40vh] md:h-full md:flex-1 bg-slate-100 relative shrink-0 order-1 md:order-2">
+        <div id="map" ref={mapRef} className="absolute inset-0 z-0 w-full h-full" />
+      </div>
+
+      {/* Sidebar / List View (Bottom on mobile, Left on desktop) */}
+      <div className="w-full flex-1 md:h-full md:w-[480px] lg:w-[600px] flex flex-col border-t md:border-t-0 md:border-r border-slate-200 bg-white overflow-hidden shrink-0 order-2 md:order-1">
         <div className="p-4 sm:p-6 border-b border-slate-100 shrink-0">
           <h1 className="text-2xl font-bold text-slate-900 mb-1">내 주변 캠페인</h1>
           <p className="text-slate-500 text-sm mb-5">현재 위치를 기반으로 협찬 가능한 업체를 찾아보세요.</p>
@@ -170,11 +175,6 @@ export default function Home() {
             />
           ))}
         </div>
-      </div>
-      
-      {/* Map View */}
-      <div className="hidden md:flex flex-1 bg-slate-100 relative items-center justify-center">
-        <div id="map" ref={mapRef} className="absolute inset-0 z-0 w-full h-full" />
       </div>
 
       {/* Campaign Detail Modal */}
