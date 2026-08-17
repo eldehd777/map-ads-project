@@ -14,6 +14,8 @@ export interface Campaign {
   views: string;
   budget: string;
   endDate: string;
+  lat?: number;
+  lng?: number;
 }
 
 const INITIAL_CAMPAIGNS: Campaign[] = [
@@ -30,7 +32,9 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     applicants: 42,
     views: "12.4k",
     budget: "300,000",
-    endDate: "2024-06-15"
+    endDate: "2024-06-15",
+    lat: 37.4980,
+    lng: 127.0275
   },
   {
     id: 2,
@@ -44,7 +48,9 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     applicants: 18,
     views: "5.2k",
     budget: "500,000",
-    endDate: "2024-06-20"
+    endDate: "2024-06-20",
+    lat: 37.4965,
+    lng: 127.0280
   },
   {
     id: 3,
@@ -58,7 +64,9 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     applicants: 56,
     views: "45.1k",
     budget: "200,000",
-    endDate: "2024-05-01"
+    endDate: "2024-05-01",
+    lat: 37.4990,
+    lng: 127.0250
   },
   {
     id: 4,
@@ -72,7 +80,9 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     applicants: 120,
     views: "34.2k",
     budget: "1,000,000",
-    endDate: "2024-06-30"
+    endDate: "2024-06-30",
+    lat: 37.5005,
+    lng: 127.0300
   },
   {
     id: 5,
@@ -87,7 +97,9 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     applicants: 9,
     views: "2.1k",
     budget: "240,000",
-    endDate: "2024-06-10"
+    endDate: "2024-06-10",
+    lat: 37.4970,
+    lng: 127.0260
   },
   {
     id: 6,
@@ -101,7 +113,9 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     applicants: 310,
     views: "89.5k",
     budget: "2,000,000",
-    endDate: "2024-07-15"
+    endDate: "2024-07-15",
+    lat: 37.4995,
+    lng: 127.0290
   },
   {
     id: 7,
@@ -115,7 +129,9 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     applicants: 245,
     views: "67.8k",
     budget: "1,500,000",
-    endDate: "2024-06-25"
+    endDate: "2024-06-25",
+    lat: 37.4960,
+    lng: 127.0310
   },
   {
     id: 8,
@@ -129,7 +145,9 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     applicants: 88,
     views: "15.3k",
     budget: "300,000",
-    endDate: "2024-05-20"
+    endDate: "2024-05-20",
+    lat: 37.4950,
+    lng: 127.0250
   }
 ];
 
