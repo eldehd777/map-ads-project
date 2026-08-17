@@ -1,10 +1,12 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapPin, Filter, Search } from "lucide-react";
 import CampaignCard from "@/components/CampaignCard";
+import CampaignModal from "@/components/CampaignModal";
 
 export default function Home() {
   const mapRef = useRef<HTMLDivElement>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
 
   useEffect(() => {
     // Initialize Kakao Map
@@ -32,6 +34,29 @@ export default function Home() {
           const zoomControl = new window.kakao.maps.ZoomControl();
           // @ts-ignore
           map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
+
+          // HTML5의 geolocation으로 사용할 수 있는지 확인합니다 
+          if (navigator.geolocation) {
+            // GeoLocation을 이용해서 접속 위치를 얻어옵니다
+            navigator.geolocation.getCurrentPosition(function(position) {
+              const lat = position.coords.latitude, // 위도
+                    lon = position.coords.longitude; // 경도
+              // @ts-ignore
+              const locPosition = new window.kakao.maps.LatLng(lat, lon);
+              
+              // 마커를 생성합니다
+              // @ts-ignore
+              const marker = new window.kakao.maps.Marker({
+                map: map,
+                position: locPosition
+              });
+              
+              // 지도 중심좌표를 접속위치로 변경합니다
+              map.setCenter(locPosition);
+            }, function(error) {
+              console.warn("Geolocation error:", error);
+            });
+          }
         });
       }
     };
@@ -112,7 +137,11 @@ export default function Home() {
             <span className="text-sm font-semibold text-slate-900">거리순 추천 <span className="text-blue-600">12건</span></span>
           </div>
           {campaigns.map((campaign) => (
-            <CampaignCard key={campaign.id} {...campaign} />
+            <CampaignCard 
+              key={campaign.id} 
+              {...campaign} 
+              onViewDetail={() => setSelectedCampaign(campaign)}
+            />
           ))}
         </div>
       </div>
@@ -121,6 +150,13 @@ export default function Home() {
       <div className="hidden md:flex flex-1 bg-slate-100 relative items-center justify-center">
         <div id="map" ref={mapRef} className="absolute inset-0 z-0 w-full h-full" />
       </div>
+
+      {/* Campaign Detail Modal */}
+      <CampaignModal 
+        campaign={selectedCampaign} 
+        isOpen={!!selectedCampaign} 
+        onClose={() => setSelectedCampaign(null)} 
+      />
     </div>
   );
 }

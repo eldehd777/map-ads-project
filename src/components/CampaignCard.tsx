@@ -8,11 +8,15 @@ interface CampaignCardProps {
   tags: string[];
   imageUrl: string;
   isUrgent?: boolean;
+  onViewDetail?: () => void;
 }
 
-export default function CampaignCard({ storeName, title, distance, reward, tags, imageUrl, isUrgent }: CampaignCardProps) {
+export default function CampaignCard({ storeName, title, distance, reward, tags, imageUrl, isUrgent, onViewDetail }: CampaignCardProps) {
   return (
-    <div className="group flex flex-col sm:flex-row bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg hover:border-slate-300 transition-all duration-300">
+    <div 
+      className="group flex flex-col sm:flex-row bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg hover:border-slate-300 transition-all duration-300 cursor-pointer"
+      onClick={onViewDetail}
+    >
       <div className="sm:w-48 h-48 sm:h-auto bg-slate-100 relative shrink-0">
         <img src={imageUrl} alt={title} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-slate-800/10 group-hover:bg-transparent transition-colors z-10" />
