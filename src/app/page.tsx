@@ -19,7 +19,19 @@ export default function Home() {
             level: 3
           };
           // @ts-ignore
-          new window.kakao.maps.Map(mapRef.current, mapOptions);
+          const map = new window.kakao.maps.Map(mapRef.current, mapOptions);
+
+          // 지도타입 컨트롤(지도/스카이뷰) 생성 및 추가
+          // @ts-ignore
+          const mapTypeControl = new window.kakao.maps.MapTypeControl();
+          // @ts-ignore
+          map.addControl(mapTypeControl, window.kakao.maps.ControlPosition.TOPRIGHT);
+
+          // 줌 컨트롤 생성 및 추가
+          // @ts-ignore
+          const zoomControl = new window.kakao.maps.ZoomControl();
+          // @ts-ignore
+          map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
         });
       }
     };
