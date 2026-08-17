@@ -10,6 +10,27 @@ export default function Home() {
   const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
   const { campaigns } = useCampaignStore();
 
+  const [sheetState, setSheetState] = useState<"half" | "full">("half");
+  const touchStartY = useRef<number | null>(null);
+  const touchEndY = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.targetTouches[0].clientY;
+  };
+  
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndY.current = e.targetTouches[0].clientY;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartY.current === null || touchEndY.current === null) return;
+    const delta = touchEndY.current - touchStartY.current;
+    if (delta > 50) setSheetState("half");
+    else if (delta < -50) setSheetState("full");
+    touchStartY.current = null;
+    touchEndY.current = null;
+  };
+
   useEffect(() => {
     // Initialize Kakao Map
     const initMap = () => {
@@ -134,15 +155,28 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)] overflow-hidden">
-      {/* Map View (Top on mobile, Right on desktop) */}
-      <div className="w-full h-[40vh] md:h-full md:flex-1 bg-slate-100 relative shrink-0 order-1 md:order-2">
-        <div id="map" ref={mapRef} className="absolute inset-0 z-0 w-full h-full" />
+    <div className="relative h-[calc(100vh-4rem)] overflow-hidden md:flex md:flex-row">
+      
+      {/* Map View (Background on mobile, Right on desktop) */}
+      <div className="absolute inset-0 z-0 md:relative md:flex-1 bg-slate-100 md:order-2">
+        <div id="map" ref={mapRef} className="absolute inset-0 w-full h-full" />
       </div>
 
-      {/* Sidebar / List View (Bottom on mobile, Left on desktop) */}
-      <div className="w-full flex-1 md:h-full md:w-[480px] lg:w-[600px] flex flex-col border-t md:border-t-0 md:border-r border-slate-200 bg-white overflow-hidden shrink-0 order-2 md:order-1">
-        <div className="p-4 sm:p-6 border-b border-slate-100 shrink-0">
+      {/* Sidebar / Bottom Sheet List View */}
+      <div 
+        className={`absolute bottom-0 left-0 right-0 z-10 bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.15)] rounded-t-3xl md:rounded-none md:shadow-none transition-all duration-300 md:relative md:h-full md:w-[480px] lg:w-[600px] flex flex-col md:border-r border-slate-200 shrink-0 md:order-1 ${sheetState === 'full' ? 'h-[95vh] md:h-full' : 'h-[60vh] md:h-full'}`}
+      >
+        {/* Drag Handle for Mobile */}
+        <div 
+          className="w-full flex justify-center pt-4 pb-2 md:hidden touch-pan-y cursor-grab active:cursor-grabbing"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="w-12 h-1.5 bg-slate-300 rounded-full" />
+        </div>
+
+        <div className="p-4 sm:p-6 border-b border-slate-100 shrink-0 pt-2 md:pt-6">
           <h1 className="text-2xl font-bold text-slate-900 mb-1">내 주변 캠페인</h1>
           <p className="text-slate-500 text-sm mb-5">현재 위치를 기반으로 협찬 가능한 업체를 찾아보세요.</p>
           
