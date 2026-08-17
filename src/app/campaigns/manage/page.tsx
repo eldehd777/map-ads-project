@@ -17,6 +17,7 @@ export default function CampaignsManagePage() {
   const [openMenuId, setOpenMenuId] = useState<number | string | null>(null);
   const [viewApplicantsFor, setViewApplicantsFor] = useState<number | string | null>(null);
   const [applicants, setApplicants] = useState(DUMMY_APPLICANTS);
+  const [modalTab, setModalTab] = useState<"pending" | "approved">("pending");
 
   const handleApprove = (id: number) => {
     setApplicants(prev => prev.map(a => a.id === id ? { ...a, status: "approved" } : a));
@@ -25,6 +26,15 @@ export default function CampaignsManagePage() {
   const handleReject = (id: number) => {
     setApplicants(prev => prev.map(a => a.id === id ? { ...a, status: "rejected" } : a));
   };
+
+  const handleCancel = (id: number) => {
+    if (confirm("정말로 이 지원자의 승인을 취소하시겠습니까?")) {
+      setApplicants(prev => prev.map(a => a.id === id ? { ...a, status: "canceled" } : a));
+    }
+  };
+
+  const filteredApplicants = applicants.filter(a => a.status === modalTab);
+
   return (
     <div className="flex-1 bg-slate-50 overflow-y-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -192,23 +202,50 @@ export default function CampaignsManagePage() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in slide-in-from-bottom-4 duration-300">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-white shrink-0">
-              <div>
-                <h2 className="text-xl font-bold text-slate-900 mb-1">지원자 목록</h2>
-                <p className="text-sm text-slate-500">총 {applicants.length}명의 크리에이터가 이 캠페인에 지원했습니다.</p>
+            <div className="flex flex-col border-b border-slate-100 bg-white shrink-0">
+              <div className="flex items-center justify-between p-6 pb-4">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900 mb-1">지원자 목록</h2>
+                  <p className="text-sm text-slate-500">
+                    총 {applicants.filter(a => a.status === "pending" || a.status === "approved").length}명의 크리에이터 관리
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setViewApplicantsFor(null)}
+                  className="p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded-full transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
               </div>
-              <button 
-                onClick={() => setViewApplicantsFor(null)}
-                className="p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded-full transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
+
+              {/* Tabs */}
+              <div className="flex items-center gap-6 px-6 mt-2">
+                <button 
+                  onClick={() => setModalTab("pending")}
+                  className={`pb-3 text-sm font-bold relative transition-colors ${modalTab === "pending" ? "text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
+                >
+                  신청 대기중 <span className="ml-1 px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded-md text-xs">{applicants.filter(a => a.status === "pending").length}</span>
+                  {modalTab === "pending" && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-t-full" />}
+                </button>
+                <button 
+                  onClick={() => setModalTab("approved")}
+                  className={`pb-3 text-sm font-bold relative transition-colors ${modalTab === "approved" ? "text-blue-600" : "text-slate-500 hover:text-slate-700"}`}
+                >
+                  승인 완료 <span className="ml-1 px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-xs">{applicants.filter(a => a.status === "approved").length}</span>
+                  {modalTab === "approved" && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-t-full" />}
+                </button>
+              </div>
             </div>
 
             {/* Modal Body */}
             <div className="flex-1 overflow-y-auto p-6 bg-slate-50">
               <div className="space-y-4">
-                {applicants.map(applicant => (
+                {filteredApplicants.length === 0 ? (
+                  <div className="py-12 text-center text-slate-500">
+                    {modalTab === "pending" ? "신청 대기중인 지원자가 없습니다." : "승인된 지원자가 없습니다."}
+                  </div>
+                ) : (
+                  filteredApplicants.map(applicant => (
                   <div key={applicant.id} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row gap-5 transition-all hover:border-blue-200 hover:shadow-md">
                     
                     {/* Profile Info */}
@@ -230,7 +267,7 @@ export default function CampaignsManagePage() {
 
                     {/* Actions */}
                     <div className="flex flex-row sm:flex-col justify-end gap-2 sm:w-28 shrink-0">
-                      {applicant.status === "pending" ? (
+                      {applicant.status === "pending" && (
                         <>
                           <button onClick={() => handleApprove(applicant.id)} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 font-bold text-sm rounded-xl transition-colors">
                             <Check className="w-4 h-4" /> 승인
@@ -239,14 +276,16 @@ export default function CampaignsManagePage() {
                             <XCircle className="w-4 h-4" /> 반려
                           </button>
                         </>
-                      ) : applicant.status === "approved" ? (
-                        <div className="flex-1 flex items-center justify-center px-3 py-2 bg-emerald-500 text-white font-bold text-sm rounded-xl">
-                          승인 완료
-                        </div>
-                      ) : (
-                        <div className="flex-1 flex items-center justify-center px-3 py-2 bg-slate-100 text-slate-500 font-bold text-sm rounded-xl">
-                          반려됨
-                        </div>
+                      )}
+                      {applicant.status === "approved" && (
+                        <>
+                          <div className="flex-1 flex items-center justify-center px-3 py-2 bg-emerald-500 text-white font-bold text-sm rounded-xl">
+                            승인 완료
+                          </div>
+                          <button onClick={() => handleCancel(applicant.id)} className="flex-1 flex items-center justify-center px-3 py-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 font-bold text-sm rounded-xl transition-colors">
+                            승인 취소
+                          </button>
+                        </>
                       )}
                     </div>
 
