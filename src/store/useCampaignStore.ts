@@ -66,6 +66,7 @@ interface CampaignStore {
   campaigns: Campaign[];
   addCampaign: (campaign: Campaign) => void;
   updateCampaign: (id: number | string, updates: Partial<Campaign>) => void;
+  deleteCampaign: (id: number | string) => void;
 }
 
 export const useCampaignStore = create<CampaignStore>((set) => ({
@@ -73,5 +74,8 @@ export const useCampaignStore = create<CampaignStore>((set) => ({
   addCampaign: (campaign) => set((state) => ({ campaigns: [campaign, ...state.campaigns] })),
   updateCampaign: (id, updates) => set((state) => ({
     campaigns: state.campaigns.map(c => c.id === id ? { ...c, ...updates } : c)
+  })),
+  deleteCampaign: (id) => set((state) => ({
+    campaigns: state.campaigns.filter(c => c.id !== id)
   })),
 }));

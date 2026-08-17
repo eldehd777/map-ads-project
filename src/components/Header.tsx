@@ -3,16 +3,18 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Store, User, MapPin } from "lucide-react";
+import { Store, User, Shield } from "lucide-react";
 import { clsx } from "clsx";
 
 export default function Header() {
   const pathname = usePathname();
-  const [mode, setMode] = useState<"creator" | "brand">("creator");
+  const [mode, setMode] = useState<"creator" | "brand" | "admin">("creator");
 
   // Sync mode based on current URL path
   useEffect(() => {
-    if (pathname.startsWith("/showcase") || pathname.startsWith("/campaigns/manage") || pathname.startsWith("/snapshots")) {
+    if (pathname.startsWith("/admin")) {
+      setMode("admin");
+    } else if (pathname.startsWith("/showcase") || pathname.startsWith("/campaigns/manage") || pathname.startsWith("/snapshots")) {
       setMode("brand");
     } else if (pathname === "/" || pathname.startsWith("/dashboard") || pathname.startsWith("/profile")) {
       setMode("creator");
@@ -33,6 +35,12 @@ export default function Header() {
                 <Link href="/dashboard" className={clsx("transition-colors", pathname.startsWith("/dashboard") ? "text-blue-600 font-bold" : "text-slate-600 hover:text-slate-900")}>내 진행 상황</Link>
                 <Link href="/profile" className={clsx("transition-colors", pathname.startsWith("/profile") ? "text-blue-600 font-bold" : "text-slate-600 hover:text-slate-900")}>내 친구 프로필</Link>
               </>
+            ) : mode === "admin" ? (
+              <>
+                <Link href="/admin" className={clsx("transition-colors", pathname === "/admin" ? "text-red-600 font-bold" : "text-slate-600 hover:text-slate-900")}>통합 대시보드</Link>
+                <Link href="/admin/campaigns" className={clsx("transition-colors", pathname.startsWith("/admin/campaigns") ? "text-red-600 font-bold" : "text-slate-600 hover:text-slate-900")}>전체 캠페인 관리</Link>
+                <Link href="/admin/snapshots" className={clsx("transition-colors", pathname.startsWith("/admin/snapshots") ? "text-red-600 font-bold" : "text-slate-600 hover:text-slate-900")}>스냅샷 통합 심사</Link>
+              </>
             ) : (
               <>
                 <Link href="/showcase" className={clsx("transition-colors", pathname.startsWith("/showcase") ? "text-blue-600 font-bold" : "text-slate-600 hover:text-slate-900")}>크리에이터 쇼케이스</Link>
@@ -45,8 +53,8 @@ export default function Header() {
         
         <div className="flex items-center gap-4">
           <div className="flex items-center bg-slate-100 rounded-full p-1 border border-slate-200">
-            <button
-              onClick={() => setMode("creator")}
+            <Link
+              href="/"
               className={clsx(
                 "flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all",
                 mode === "creator" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
@@ -54,9 +62,9 @@ export default function Header() {
             >
               <User className="w-4 h-4" />
               <span className="hidden sm:inline">크리에이터</span>
-            </button>
-            <button
-              onClick={() => setMode("brand")}
+            </Link>
+            <Link
+              href="/campaigns/manage"
               className={clsx(
                 "flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all",
                 mode === "brand" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
@@ -64,7 +72,17 @@ export default function Header() {
             >
               <Store className="w-4 h-4" />
               <span className="hidden sm:inline">광고주</span>
-            </button>
+            </Link>
+            <Link
+              href="/admin"
+              className={clsx(
+                "flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all",
+                mode === "admin" ? "bg-red-50 text-red-700 shadow-sm border border-red-100" : "text-slate-500 hover:text-slate-700"
+              )}
+            >
+              <Shield className="w-4 h-4" />
+              <span className="hidden sm:inline">어드민</span>
+            </Link>
           </div>
           
           <button className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-slate-900 text-white">
