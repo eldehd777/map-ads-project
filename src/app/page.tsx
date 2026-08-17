@@ -3,10 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { MapPin, Filter, Search } from "lucide-react";
 import CampaignCard from "@/components/CampaignCard";
 import CampaignModal from "@/components/CampaignModal";
+import { useCampaignStore } from "@/store/useCampaignStore";
 
 export default function Home() {
   const mapRef = useRef<HTMLDivElement>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
+  const { campaigns } = useCampaignStore();
 
   useEffect(() => {
     // Initialize Kakao Map
@@ -83,37 +85,6 @@ export default function Home() {
       return () => clearInterval(timer);
     }
   }, []);
-
-  const campaigns = [
-    {
-      id: 1,
-      storeName: "카페 베를린",
-      title: "신메뉴 '흑임자 라떼' 릴스/쇼츠 리뷰어 모집",
-      distance: "도보 3분 거리 (150m)",
-      reward: "음료 2잔 + 디저트 + 3만원",
-      tags: ["카페", "신메뉴", "디저트", "릴스"],
-      imageUrl: "https://picsum.photos/600/400?random=1",
-      isUrgent: true,
-    },
-    {
-      id: 2,
-      storeName: "근육공방 피트니스",
-      title: "새로 오픈한 PT샵 시설 소개 영상 촬영",
-      distance: "도보 5분 거리 (300m)",
-      reward: "1개월 무료 이용권 + 5만원",
-      tags: ["오운완", "헬스장", "다이어트"],
-      imageUrl: "https://picsum.photos/600/400?random=2",
-    },
-    {
-      id: 3,
-      storeName: "스시 오마카세 젠",
-      title: "디너 오마카세 2인 식사권 협찬 (블로그/인스타)",
-      distance: "차로 10분 거리 (2.5km)",
-      reward: "디너 2인 식사권 (30만원 상당)",
-      tags: ["맛집", "오마카세", "데이트코스"],
-      imageUrl: "https://picsum.photos/600/400?random=3",
-    }
-  ];
 
   return (
     <div className="flex flex-col md:flex-row h-full">

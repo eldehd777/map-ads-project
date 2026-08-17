@@ -2,15 +2,10 @@
 
 import Link from "next/link";
 import { Plus, Search, Filter, MoreVertical, Users, Eye, TrendingUp, Calendar } from "lucide-react";
-
-const DUMMY_CAMPAIGNS = [
-  { id: 1, title: "신메뉴 '흑임자 라떼' 릴스/쇼츠 리뷰어 모집", status: "active", applicants: 42, views: "12.4k", budget: "300,000", endDate: "2024-06-15" },
-  { id: 2, title: "오픈 1주년 기념 인플루언서 초청", status: "active", applicants: 18, views: "5.2k", budget: "500,000", endDate: "2024-06-20" },
-  { id: 3, title: "시그니처 디저트 체험단 (블로그)", status: "completed", applicants: 56, views: "45.1k", budget: "200,000", endDate: "2024-05-01" },
-  { id: 4, title: "테이크아웃 전용 메뉴 SNS 홍보", status: "paused", applicants: 5, views: "1.1k", budget: "150,000", endDate: "2024-07-01" },
-];
+import { useCampaignStore } from "@/store/useCampaignStore";
 
 export default function CampaignsManagePage() {
+  const { campaigns } = useCampaignStore();
   return (
     <div className="flex-1 bg-slate-50 overflow-y-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -97,7 +92,7 @@ export default function CampaignsManagePage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {DUMMY_CAMPAIGNS.map((campaign) => (
+                {campaigns.map((campaign) => (
                   <tr key={campaign.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <p className="font-bold text-slate-900 max-w-xs truncate">{campaign.title}</p>

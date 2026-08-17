@@ -4,17 +4,35 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Image as ImageIcon, Plus, Trash2, Calendar, MapPin, Store, Tag, Loader2 } from "lucide-react";
+import { useCampaignStore } from "@/store/useCampaignStore";
 
 export default function CreateCampaignPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addCampaign } = useCampaignStore();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
+    // Create dummy new campaign
+    const newCampaign = {
+      id: Date.now(),
+      storeName: "새로 등록된 테스트 매장",
+      title: "신규 캠페인 테스트 모집",
+      distance: "방금 등록됨",
+      reward: "테스트 리워드 제공",
+      tags: ["신규등록", "테스트"],
+      imageUrl: `https://picsum.photos/600/400?random=${Date.now()}`,
+      status: "active" as const,
+      applicants: 0,
+      views: "0",
+      budget: "미정",
+      endDate: "2024-12-31"
+    };
+
     setTimeout(() => {
+      addCampaign(newCampaign);
       alert("캠페인이 성공적으로 등록되었습니다!");
       router.push("/campaigns/manage");
     }, 1000);
