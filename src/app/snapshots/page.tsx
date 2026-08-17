@@ -21,10 +21,8 @@ export default function SnapshotsPage() {
 
   const handleStatusChange = (id: number, status: "approved" | "rejected") => {
     setSnapshots(prev => prev.map(s => s.id === id ? { ...s, status } : s));
-    if (selectedSnapshot?.id === id) {
-      setSelectedSnapshot((prev: any) => ({ ...prev, status }));
-    }
     alert(status === "approved" ? "승인 처리되었습니다." : "반려 처리되었습니다.");
+    setSelectedSnapshot(null); // 모달 자동 닫기
   };
 
   return (
