@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900">
         <Script
           strategy="beforeInteractive"
-          src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=s0i8ogkq7q`}
+          src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=8890c018c4dcb56573207716f39e4487&autoload=false&libraries=services`}
         />
         <Header />
         <main className="flex-1 flex flex-col">{children}</main>

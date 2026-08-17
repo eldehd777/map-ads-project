@@ -7,27 +7,30 @@ export default function Home() {
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initialize Naver Map
+    // Initialize Kakao Map
     const initMap = () => {
       // @ts-ignore
-      if (window.naver && window.naver.maps && mapRef.current) {
-        const mapOptions = {
-          // @ts-ignore
-          center: new window.naver.maps.LatLng(37.3595704, 127.105399),
-          zoom: 14
-        };
+      if (window.kakao && window.kakao.maps && mapRef.current) {
         // @ts-ignore
-        new window.naver.maps.Map(mapRef.current, mapOptions);
+        window.kakao.maps.load(() => {
+          const mapOptions = {
+            // @ts-ignore
+            center: new window.kakao.maps.LatLng(37.3595704, 127.105399),
+            level: 3
+          };
+          // @ts-ignore
+          new window.kakao.maps.Map(mapRef.current, mapOptions);
+        });
       }
     };
 
     // @ts-ignore
-    if (window.naver && window.naver.maps) {
+    if (window.kakao && window.kakao.maps) {
       initMap();
     } else {
       const timer = setInterval(() => {
         // @ts-ignore
-        if (window.naver && window.naver.maps) {
+        if (window.kakao && window.kakao.maps) {
           initMap();
           clearInterval(timer);
         }
