@@ -9,14 +9,21 @@ interface CampaignModalProps {
 
 export default function CampaignModal({ campaign, isOpen, onClose }: CampaignModalProps) {
   const [isApplying, setIsApplying] = useState(false);
+  const [appealMessage, setAppealMessage] = useState("");
 
   if (!isOpen || !campaign) return null;
 
   const handleApply = () => {
+    if (!appealMessage.trim()) {
+      alert("광고주에게 어필할 멘트를 짧게라도 작성해주세요!");
+      return;
+    }
+    
     setIsApplying(true);
     setTimeout(() => {
       alert("성공적으로 캠페인에 신청되었습니다!");
       setIsApplying(false);
+      setAppealMessage("");
       onClose();
     }, 800);
   };
@@ -101,6 +108,17 @@ export default function CampaignModal({ campaign, isOpen, onClose }: CampaignMod
                   <li>필수 포함 해시태그: 안내된 가이드라인 참고</li>
                 </ul>
               </div>
+            </div>
+
+            {/* Appeal Message Input */}
+            <div>
+              <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">광고주에게 어필하기</h4>
+              <textarea 
+                value={appealMessage}
+                onChange={(e) => setAppealMessage(e.target.value)}
+                placeholder="해당 캠페인에 참여하고 싶은 이유와 본인의 강점을 자유롭게 적어주세요. (예: 평소 자주 방문하는 맛집입니다! 예쁜 고화질 사진 약속드려요.)"
+                className="w-full h-24 p-4 bg-white border border-slate-200 rounded-2xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none transition-all"
+              />
             </div>
           </div>
         </div>
