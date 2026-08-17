@@ -65,9 +65,13 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
 interface CampaignStore {
   campaigns: Campaign[];
   addCampaign: (campaign: Campaign) => void;
+  updateCampaign: (id: number | string, updates: Partial<Campaign>) => void;
 }
 
 export const useCampaignStore = create<CampaignStore>((set) => ({
   campaigns: INITIAL_CAMPAIGNS,
   addCampaign: (campaign) => set((state) => ({ campaigns: [campaign, ...state.campaigns] })),
+  updateCampaign: (id, updates) => set((state) => ({
+    campaigns: state.campaigns.map(c => c.id === id ? { ...c, ...updates } : c)
+  })),
 }));

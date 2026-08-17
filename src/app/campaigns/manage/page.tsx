@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
+
 import Link from "next/link";
 import { Plus, Search, Filter, MoreVertical, Users, Eye, TrendingUp, Calendar } from "lucide-react";
 import { useCampaignStore } from "@/store/useCampaignStore";
 
 export default function CampaignsManagePage() {
-  const { campaigns } = useCampaignStore();
+  const { campaigns, updateCampaign } = useCampaignStore();
+  const [openMenuId, setOpenMenuId] = useState<number | string | null>(null);
   return (
     <div className="flex-1 bg-slate-50 overflow-y-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -29,14 +32,14 @@ export default function CampaignsManagePage() {
               <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><TrendingUp className="w-5 h-5" /></div>
               진행중인 캠페인
             </div>
-            <div className="text-3xl font-bold text-slate-900">2<span className="text-base font-normal text-slate-500 ml-1">건</span></div>
+            <div className="text-3xl font-bold text-slate-900">{campaigns.filter(c => c.status === "active").length}<span className="text-base font-normal text-slate-500 ml-1">건</span></div>
           </div>
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
             <div className="flex items-center gap-3 mb-4 text-slate-500 font-medium">
               <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg"><Users className="w-5 h-5" /></div>
               총 누적 신청자
             </div>
-            <div className="text-3xl font-bold text-slate-900">121<span className="text-base font-normal text-slate-500 ml-1">명</span></div>
+            <div className="text-3xl font-bold text-slate-900">{campaigns.reduce((sum, c) => sum + (c.applicants || 0), 0)}<span className="text-base font-normal text-slate-500 ml-1">명</span></div>
           </div>
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
             <div className="flex items-center gap-3 mb-4 text-slate-500 font-medium">
@@ -120,10 +123,41 @@ export default function CampaignsManagePage() {
                     <td className="px-6 py-4 text-slate-500 font-medium">
                       {campaign.endDate}
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                    <td className="px-6 py-4 text-right relative">
+                      <button 
+                        onClick={() => setOpenMenuId(openMenuId === campaign.id ? null : campaign.id)}
+                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      >
                         <MoreVertical className="w-5 h-5" />
                       </button>
+
+                      {openMenuId === campaign.id && (
+                        <div className="absolute right-12 top-10 w-36 bg-white border border-slate-200 rounded-xl shadow-xl z-50 py-1 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+                          {campaign.status !== "active" && (
+                            <button onClick={() => { updateCampaign(campaign.id, { status: "active" }); setOpenMenuId(null); }} className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                              활성화 (재개)
+                            </button>
+                          )}
+                          {campaign.status !== "paused" && (
+                            <button onClick={() => { updateCampaign(campaign.id, { status: "paused" }); setOpenMenuId(null); }} className="w-full text-left px-4 py-2.5 text-sm font-medium text-amber-600 hover:bg-amber-50 transition-colors">
+                              일시정지
+                            </button>
+                          )}
+                          {campaign.status !== "completed" && (
+                            <button onClick={() => { updateCampaign(campaign.id, { status: "completed" }); setOpenMenuId(null); }} className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                              완료 처리
+                            </button>
+                          )}
+                          <div className="h-px bg-slate-100 my-1" />
+                          <button onClick={() => {
+                            const newDate = prompt("새로운 마감일을 입력하세요 (YYYY-MM-DD)", campaign.endDate);
+                            if (newDate) { updateCampaign(campaign.id, { endDate: newDate }); }
+                            setOpenMenuId(null);
+                          }} className="w-full text-left px-4 py-2.5 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors">
+                            기간 연장 / 설정
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
