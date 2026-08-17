@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star, Users, MapPin, ExternalLink, X, Instagram, MessageCircle } from "lucide-react";
+import { Star, Users, MapPin, ExternalLink, X, Camera, MessageCircle } from "lucide-react";
 
 const DUMMY_CREATORS = [
   { id: 1, name: "푸드트래블러", role: "맛집 전문 리뷰어", followers: "12.4k", rating: 4.9, avatar: "https://picsum.photos/400/400?random=31", tags: ["맛집", "카페", "신상투어"] },
@@ -129,7 +129,7 @@ export default function ShowcasePage() {
 
               <div className="mt-8 flex gap-3 pt-6 border-t border-slate-200 shrink-0">
                 <button className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors">
-                  <Instagram className="w-5 h-5" />
+                  <Camera className="w-5 h-5" />
                   SNS 보기
                 </button>
                 <button className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all">
