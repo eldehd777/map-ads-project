@@ -37,6 +37,42 @@ export default function Home() {
           // @ts-ignore
           map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
 
+          // 🌟 캠페인 마커 및 지도의 바운더리(영역) 설정 🌟
+          // @ts-ignore
+          const bounds = new window.kakao.maps.LatLngBounds();
+          let hasMarkers = false;
+
+          campaigns.forEach(campaign => {
+            if (campaign.lat && campaign.lng && campaign.status === "active") {
+              // @ts-ignore
+              const markerPos = new window.kakao.maps.LatLng(campaign.lat, campaign.lng);
+              
+              // 빨간색 캠페인 커스텀 마커
+              const campaignImgSrc = 'data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="%23ef4444" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpath d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"%3E%3C/path%3E%3Ccircle cx="12" cy="10" r="3" fill="white"%3E%3C/circle%3E%3C/svg%3E';
+              // @ts-ignore
+              const campaignImgSize = new window.kakao.maps.Size(40, 40);
+              // @ts-ignore
+              const campaignMarkerImg = new window.kakao.maps.MarkerImage(campaignImgSrc, campaignImgSize);
+
+              // @ts-ignore
+              const marker = new window.kakao.maps.Marker({
+                map: map,
+                position: markerPos,
+                title: campaign.storeName,
+                image: campaignMarkerImg
+              });
+
+              // 마커 좌표를 바운더리에 추가
+              bounds.extend(markerPos);
+              hasMarkers = true;
+
+              // @ts-ignore
+              window.kakao.maps.event.addListener(marker, 'click', function() {
+                setSelectedCampaign(campaign);
+              });
+            }
+          });
+
           // HTML5의 geolocation으로 사용할 수 있는지 확인합니다 
           if (navigator.geolocation) {
             // GeoLocation을 이용해서 접속 위치를 얻어옵니다
@@ -61,41 +97,23 @@ export default function Home() {
                 image: markerImage
               });
               
-              // 지도 중심좌표를 강남역(캠페인 밀집지역)으로 고정하거나 내 위치로 변경합니다. (여기서는 캠페인이 잘 보이게 강남역으로 고정)
-              // @ts-ignore
-              map.setCenter(new window.kakao.maps.LatLng(37.4980, 127.0275));
+              // 내 위치도 지도가 보여줄 바운더리에 포함시킵니다.
+              bounds.extend(locPosition);
+              
+              if (hasMarkers) {
+                map.setBounds(bounds);
+              } else {
+                map.setCenter(locPosition);
+              }
             }, function(error) {
               console.warn("Geolocation error:", error);
+              // 위치를 못 가져와도 캠페인 마커가 있다면 마커들이 모두 보이게 설정
+              if (hasMarkers) map.setBounds(bounds);
             });
+          } else {
+             // Geolocation 지원 안 할 경우
+             if (hasMarkers) map.setBounds(bounds);
           }
-
-          // 🌟 캠페인 마커들 지도에 표시하기 🌟
-          campaigns.forEach(campaign => {
-            if (campaign.lat && campaign.lng && campaign.status === "active") {
-              // @ts-ignore
-              const markerPos = new window.kakao.maps.LatLng(campaign.lat, campaign.lng);
-              
-              // 빨간색 캠페인 커스텀 마커
-              const campaignImgSrc = 'data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="%23ef4444" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpath d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"%3E%3C/path%3E%3Ccircle cx="12" cy="10" r="3" fill="white"%3E%3C/circle%3E%3C/svg%3E';
-              // @ts-ignore
-              const campaignImgSize = new window.kakao.maps.Size(40, 40);
-              // @ts-ignore
-              const campaignMarkerImg = new window.kakao.maps.MarkerImage(campaignImgSrc, campaignImgSize);
-
-              // @ts-ignore
-              const marker = new window.kakao.maps.Marker({
-                map: map,
-                position: markerPos,
-                title: campaign.storeName,
-                image: campaignMarkerImg
-              });
-
-              // @ts-ignore
-              window.kakao.maps.event.addListener(marker, 'click', function() {
-                setSelectedCampaign(campaign);
-              });
-            }
-          });
         });
       }
     };

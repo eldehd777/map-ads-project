@@ -33,8 +33,8 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     views: "12.4k",
     budget: "300,000",
     endDate: "2024-06-15",
-    lat: 37.4980,
-    lng: 127.0275
+    lat: 37.5340,
+    lng: 126.9940
   },
   {
     id: 2,
@@ -81,8 +81,8 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     views: "34.2k",
     budget: "1,000,000",
     endDate: "2024-06-30",
-    lat: 37.5005,
-    lng: 127.0300
+    lat: 33.5000,
+    lng: 126.5300
   },
   {
     id: 5,
@@ -98,8 +98,8 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     views: "2.1k",
     budget: "240,000",
     endDate: "2024-06-10",
-    lat: 37.4970,
-    lng: 127.0260
+    lat: 37.5568,
+    lng: 126.9245
   },
   {
     id: 6,
@@ -114,8 +114,8 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     views: "89.5k",
     budget: "2,000,000",
     endDate: "2024-07-15",
-    lat: 37.4995,
-    lng: 127.0290
+    lat: 33.4660,
+    lng: 126.3200
   },
   {
     id: 7,
@@ -130,8 +130,8 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     views: "67.8k",
     budget: "1,500,000",
     endDate: "2024-06-25",
-    lat: 37.4960,
-    lng: 127.0310
+    lat: 37.3940,
+    lng: 127.1110
   },
   {
     id: 8,
@@ -146,8 +146,8 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     views: "15.3k",
     budget: "300,000",
     endDate: "2024-05-20",
-    lat: 37.4950,
-    lng: 127.0250
+    lat: 35.1587,
+    lng: 129.1604
   }
 ];
 
