@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Store, User, Shield } from "lucide-react";
+import { Store, User, Shield, ChevronDown, Menu } from "lucide-react";
 import { clsx } from "clsx";
 
 export default function Header() {
   const pathname = usePathname();
   const [mode, setMode] = useState<"creator" | "brand" | "admin">("creator");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   // Sync mode based on current URL path
   useEffect(() => {
@@ -24,10 +26,45 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-8">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="text-xl font-bold tracking-tight text-slate-900">Hell Ads</span>
-          </Link>
+        <div className="flex items-center gap-4 sm:gap-8">
+          
+          {/* Logo & Workspace Switcher */}
+          <div className="relative">
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)} 
+              className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity"
+            >
+              <span className="text-xl font-black tracking-tight text-slate-900">Hell Ads</span>
+              <div className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 transition-colors px-2.5 py-1.5 rounded-lg border border-slate-200">
+                {mode === "creator" && <><User className="w-3.5 h-3.5 text-blue-600" /><span className="text-xs font-bold text-slate-700">크리에이터</span></>}
+                {mode === "brand" && <><Store className="w-3.5 h-3.5 text-indigo-600" /><span className="text-xs font-bold text-slate-700">광고주</span></>}
+                {mode === "admin" && <><Shield className="w-3.5 h-3.5 text-red-600" /><span className="text-xs font-bold text-slate-700">어드민</span></>}
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
+              </div>
+            </button>
+
+            {/* Dropdown Menu */}
+            {isMenuOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsMenuOpen(false)} />
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white shadow-xl rounded-2xl border border-slate-100 py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
+                  <div className="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">모드 전환</div>
+                  <Link href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors">
+                    <div className="p-1.5 bg-blue-50 text-blue-600 rounded-md"><User className="w-4 h-4" /></div>
+                    <span className="text-sm font-bold text-slate-700">크리에이터</span>
+                  </Link>
+                  <Link href="/campaigns/manage" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors">
+                    <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-md"><Store className="w-4 h-4" /></div>
+                    <span className="text-sm font-bold text-slate-700">광고주</span>
+                  </Link>
+                  <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors">
+                    <div className="p-1.5 bg-red-50 text-red-600 rounded-md"><Shield className="w-4 h-4" /></div>
+                    <span className="text-sm font-bold text-slate-700">어드민 (마스터)</span>
+                  </Link>
+                </div>
+              </>
+            )}
+          </div>
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
             {mode === "creator" ? (
               <>
@@ -51,45 +88,40 @@ export default function Header() {
           </nav>
         </div>
         
-        <div className="flex items-center gap-4">
-          <div className="flex items-center bg-slate-100 rounded-full p-1 border border-slate-200">
-            <Link
-              href="/"
-              className={clsx(
-                "flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all",
-                mode === "creator" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
-              )}
-            >
-              <User className="w-4 h-4" />
-              <span className="hidden sm:inline">크리에이터</span>
-            </Link>
-            <Link
-              href="/campaigns/manage"
-              className={clsx(
-                "flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all",
-                mode === "brand" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
-              )}
-            >
-              <Store className="w-4 h-4" />
-              <span className="hidden sm:inline">광고주</span>
-            </Link>
-            <Link
-              href="/admin"
-              className={clsx(
-                "flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all",
-                mode === "admin" ? "bg-red-50 text-red-700 shadow-sm border border-red-100" : "text-slate-500 hover:text-slate-700"
-              )}
-            >
-              <Shield className="w-4 h-4" />
-              <span className="hidden sm:inline">어드민</span>
-            </Link>
-          </div>
-          
-          <button className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-slate-900 text-white">
-            <span className="text-xs font-semibold">C</span>
+        <div className="flex items-center gap-3">
+          <button className="flex sm:hidden p-2 text-slate-600" onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}>
+            <Menu className="w-6 h-6" />
+          </button>
+          <button className="hidden sm:flex items-center justify-center w-9 h-9 rounded-full bg-slate-900 text-white font-bold shadow-sm hover:scale-105 transition-transform">
+            C
           </button>
         </div>
       </div>
+
+      {/* Mobile Navigation Drawer */}
+      {isMobileNavOpen && (
+        <div className="sm:hidden border-t border-slate-100 bg-white py-2 px-4 flex flex-col gap-2 shadow-inner">
+            {mode === "creator" ? (
+              <>
+                <Link href="/" onClick={() => setIsMobileNavOpen(false)} className={clsx("px-4 py-3 rounded-xl transition-colors font-semibold", pathname === "/" ? "bg-blue-50 text-blue-700" : "text-slate-600")}>내 주변 캠페인</Link>
+                <Link href="/dashboard" onClick={() => setIsMobileNavOpen(false)} className={clsx("px-4 py-3 rounded-xl transition-colors font-semibold", pathname.startsWith("/dashboard") ? "bg-blue-50 text-blue-700" : "text-slate-600")}>내 진행 상황</Link>
+                <Link href="/profile" onClick={() => setIsMobileNavOpen(false)} className={clsx("px-4 py-3 rounded-xl transition-colors font-semibold", pathname.startsWith("/profile") ? "bg-blue-50 text-blue-700" : "text-slate-600")}>내 친구 프로필</Link>
+              </>
+            ) : mode === "admin" ? (
+              <>
+                <Link href="/admin" onClick={() => setIsMobileNavOpen(false)} className={clsx("px-4 py-3 rounded-xl transition-colors font-semibold", pathname === "/admin" ? "bg-red-50 text-red-700" : "text-slate-600")}>통합 대시보드</Link>
+                <Link href="/admin/campaigns" onClick={() => setIsMobileNavOpen(false)} className={clsx("px-4 py-3 rounded-xl transition-colors font-semibold", pathname.startsWith("/admin/campaigns") ? "bg-red-50 text-red-700" : "text-slate-600")}>전체 캠페인 관리</Link>
+                <Link href="/admin/snapshots" onClick={() => setIsMobileNavOpen(false)} className={clsx("px-4 py-3 rounded-xl transition-colors font-semibold", pathname.startsWith("/admin/snapshots") ? "bg-red-50 text-red-700" : "text-slate-600")}>스냅샷 통합 심사</Link>
+              </>
+            ) : (
+              <>
+                <Link href="/showcase" onClick={() => setIsMobileNavOpen(false)} className={clsx("px-4 py-3 rounded-xl transition-colors font-semibold", pathname.startsWith("/showcase") ? "bg-indigo-50 text-indigo-700" : "text-slate-600")}>크리에이터 쇼케이스</Link>
+                <Link href="/campaigns/manage" onClick={() => setIsMobileNavOpen(false)} className={clsx("px-4 py-3 rounded-xl transition-colors font-semibold", pathname.startsWith("/campaigns/manage") ? "bg-indigo-50 text-indigo-700" : "text-slate-600")}>캠페인 관리</Link>
+                <Link href="/snapshots" onClick={() => setIsMobileNavOpen(false)} className={clsx("px-4 py-3 rounded-xl transition-colors font-semibold", pathname.startsWith("/snapshots") ? "bg-indigo-50 text-indigo-700" : "text-slate-600")}>스냅샷 관리</Link>
+              </>
+            )}
+        </div>
+      )}
     </header>
   );
 }

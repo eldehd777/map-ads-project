@@ -10,7 +10,7 @@ export default function Home() {
   const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
   const { campaigns } = useCampaignStore();
 
-  const [sheetState, setSheetState] = useState<"half" | "full">("half");
+  const [sheetState, setSheetState] = useState<"minimized" | "half" | "full">("half");
   const touchStartY = useRef<number | null>(null);
   const touchEndY = useRef<number | null>(null);
 
@@ -25,8 +25,18 @@ export default function Home() {
   const handleTouchEnd = () => {
     if (touchStartY.current === null || touchEndY.current === null) return;
     const delta = touchEndY.current - touchStartY.current;
-    if (delta > 50) setSheetState("half");
-    else if (delta < -50) setSheetState("full");
+    
+    // Swipe Down
+    if (delta > 50) {
+      if (sheetState === "full") setSheetState("half");
+      else if (sheetState === "half") setSheetState("minimized");
+    } 
+    // Swipe Up
+    else if (delta < -50) {
+      if (sheetState === "minimized") setSheetState("half");
+      else if (sheetState === "half") setSheetState("full");
+    }
+    
     touchStartY.current = null;
     touchEndY.current = null;
   };
@@ -164,7 +174,7 @@ export default function Home() {
 
       {/* Sidebar / Bottom Sheet List View */}
       <div 
-        className={`absolute bottom-0 left-0 right-0 z-10 bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.15)] rounded-t-3xl md:rounded-none md:shadow-none transition-all duration-300 md:relative md:h-full md:w-[480px] lg:w-[600px] flex flex-col md:border-r border-slate-200 shrink-0 md:order-1 ${sheetState === 'full' ? 'h-[95vh] md:h-full' : 'h-[60vh] md:h-full'}`}
+        className={`absolute bottom-0 left-0 right-0 z-10 bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.15)] rounded-t-3xl md:rounded-none md:shadow-none transition-all duration-300 md:relative md:h-full md:w-[480px] lg:w-[600px] flex flex-col md:border-r border-slate-200 shrink-0 md:order-1 ${sheetState === 'full' ? 'h-[95vh] md:h-full' : sheetState === 'half' ? 'h-[60vh] md:h-full' : 'h-[14vh] md:h-full'}`}
       >
         {/* Drag Handle for Mobile */}
         <div 
