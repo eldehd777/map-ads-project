@@ -59,6 +59,77 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     views: "45.1k",
     budget: "200,000",
     endDate: "2024-05-01"
+  },
+  {
+    id: 4,
+    storeName: "제주바다 해산물",
+    title: "제주도 직송 해산물 세트 홈파티 리뷰",
+    distance: "배송 상품 (전국)",
+    reward: "제주 해산물 세트 (15만원 상당)",
+    tags: ["배송", "먹방", "홈파티"],
+    imageUrl: "https://picsum.photos/600/400?random=4",
+    status: "active",
+    applicants: 120,
+    views: "34.2k",
+    budget: "1,000,000",
+    endDate: "2024-06-30"
+  },
+  {
+    id: 5,
+    storeName: "루나 에스테틱",
+    title: "프리미엄 스킨케어 1회 체험권",
+    distance: "도보 15분 거리 (1.2km)",
+    reward: "프리미엄 케어 1회 (12만원 상당)",
+    tags: ["뷰티", "스킨케어", "관리하는여자"],
+    imageUrl: "https://picsum.photos/600/400?random=5",
+    isUrgent: true,
+    status: "paused",
+    applicants: 9,
+    views: "2.1k",
+    budget: "240,000",
+    endDate: "2024-06-10"
+  },
+  {
+    id: 6,
+    storeName: "감성스테이 제주",
+    title: "제주 애월 독채 펜션 1박 2일 숙박권",
+    distance: "비행기 1시간 (제주도)",
+    reward: "독채 펜션 1박 숙박권 (40만원 상당)",
+    tags: ["여행", "제주도", "감성숙소"],
+    imageUrl: "https://picsum.photos/600/400?random=6",
+    status: "active",
+    applicants: 310,
+    views: "89.5k",
+    budget: "2,000,000",
+    endDate: "2024-07-15"
+  },
+  {
+    id: 7,
+    storeName: "테크기어 스토어",
+    title: "신형 노이즈캔슬링 무선 헤드폰 런칭 리뷰",
+    distance: "배송 상품 (전국)",
+    reward: "무선 헤드폰 본품 (25만원 상당)",
+    tags: ["IT", "전자기기", "음향기기"],
+    imageUrl: "https://picsum.photos/600/400?random=7",
+    status: "active",
+    applicants: 245,
+    views: "67.8k",
+    budget: "1,500,000",
+    endDate: "2024-06-25"
+  },
+  {
+    id: 8,
+    storeName: "펫마블 반려동물용품",
+    title: "강아지 프리미엄 수제 간식 세트 체험단",
+    distance: "배송 상품 (전국)",
+    reward: "수제 간식 5종 세트",
+    tags: ["반려동물", "강아지", "수제간식"],
+    imageUrl: "https://picsum.photos/600/400?random=8",
+    status: "completed",
+    applicants: 88,
+    views: "15.3k",
+    budget: "300,000",
+    endDate: "2024-05-20"
   }
 ];
 
