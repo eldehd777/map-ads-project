@@ -142,7 +142,7 @@ export default function Home() {
         
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-slate-900">거리순 추천 <span className="text-blue-600">12건</span></span>
+            <span className="text-sm font-semibold text-slate-900">거리순 추천 <span className="text-blue-600">{campaigns.length}건</span></span>
           </div>
           {campaigns.map((campaign) => (
             <CampaignCard 
