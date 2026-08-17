@@ -107,8 +107,8 @@ export default function Header() {
                     <p className="text-sm font-bold text-slate-900">Charles</p>
                     <p className="text-xs text-slate-500">charles@example.com</p>
                   </div>
-                  <Link href="/profile" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700">프로필 수정</Link>
-                  <Link href="/insights" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700">인사이트 보기</Link>
+                  <Link href="/profile" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700">프로필 및 인사이트</Link>
+                  <Link href="/dashboard" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700">내 진행 상황</Link>
                   <div className="h-px bg-slate-100 my-1" />
                   <button onClick={() => setIsProfileOpen(false)} className="w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-red-600">로그아웃</button>
                 </div>
