@@ -141,7 +141,7 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
     reward: "수제 간식 5종 세트",
     tags: ["반려동물", "강아지", "수제간식"],
     imageUrl: "https://picsum.photos/600/400?random=8",
-    status: "completed",
+    status: "active",
     applicants: 88,
     views: "15.3k",
     budget: "300,000",
