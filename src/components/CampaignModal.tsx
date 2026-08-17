@@ -1,4 +1,5 @@
-import { X, MapPin, Clock, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { X, MapPin, Clock, ArrowRight, Loader2 } from "lucide-react";
 
 interface CampaignModalProps {
   campaign: any;
@@ -7,7 +8,18 @@ interface CampaignModalProps {
 }
 
 export default function CampaignModal({ campaign, isOpen, onClose }: CampaignModalProps) {
+  const [isApplying, setIsApplying] = useState(false);
+
   if (!isOpen || !campaign) return null;
+
+  const handleApply = () => {
+    setIsApplying(true);
+    setTimeout(() => {
+      alert("성공적으로 캠페인에 신청되었습니다!");
+      setIsApplying(false);
+      onClose();
+    }, 800);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
@@ -101,9 +113,22 @@ export default function CampaignModal({ campaign, isOpen, onClose }: CampaignMod
           >
             닫기
           </button>
-          <button className="flex items-center justify-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all">
-            캠페인 신청하기
-            <ArrowRight className="w-4 h-4" />
+          <button 
+            onClick={handleApply}
+            disabled={isApplying}
+            className="flex items-center justify-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all disabled:opacity-50"
+          >
+            {isApplying ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                신청 중...
+              </>
+            ) : (
+              <>
+                캠페인 신청하기
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </div>
       </div>

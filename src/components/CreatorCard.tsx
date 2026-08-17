@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { MapPin, Users, PlaySquare, Star } from "lucide-react";
 
 interface CreatorCardProps {
@@ -44,9 +45,9 @@ export default function CreatorCard({ name, category, subscribers, tags, imageUr
           ))}
         </div>
         
-        <button className="mt-5 w-full py-2.5 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors shadow-sm">
+        <Link href="/showcase" className="mt-5 w-full py-2.5 flex items-center justify-center bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors shadow-sm">
           쇼케이스 보기
-        </button>
+        </Link>
       </div>
     </div>
   );

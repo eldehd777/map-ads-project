@@ -13,10 +13,19 @@ const DUMMY_SNAPSHOTS = [
 ];
 
 export default function SnapshotsPage() {
+  const [snapshots, setSnapshots] = useState(DUMMY_SNAPSHOTS);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [selectedSnapshot, setSelectedSnapshot] = useState<any>(null);
 
-  const filteredSnapshots = DUMMY_SNAPSHOTS.filter(s => filter === "all" || s.status === filter);
+  const filteredSnapshots = snapshots.filter(s => filter === "all" || s.status === filter);
+
+  const handleStatusChange = (id: number, status: "approved" | "rejected") => {
+    setSnapshots(prev => prev.map(s => s.id === id ? { ...s, status } : s));
+    if (selectedSnapshot?.id === id) {
+      setSelectedSnapshot((prev: any) => ({ ...prev, status }));
+    }
+    alert(status === "approved" ? "승인 처리되었습니다." : "반려 처리되었습니다.");
+  };
 
   return (
     <div className="flex-1 bg-slate-50 overflow-y-auto relative">
@@ -32,15 +41,15 @@ export default function SnapshotsPage() {
           <div className="flex bg-white rounded-2xl shadow-sm border border-slate-200 p-2">
             <div className="px-6 py-2 border-r border-slate-100 flex flex-col items-center">
               <span className="text-xs font-semibold text-slate-500 uppercase mb-1">대기중</span>
-              <span className="text-xl font-bold text-blue-600">3</span>
+              <span className="text-xl font-bold text-blue-600">{snapshots.filter(s => s.status === "pending").length}</span>
             </div>
             <div className="px-6 py-2 border-r border-slate-100 flex flex-col items-center">
               <span className="text-xs font-semibold text-slate-500 uppercase mb-1">승인완료</span>
-              <span className="text-xl font-bold text-green-600">2</span>
+              <span className="text-xl font-bold text-green-600">{snapshots.filter(s => s.status === "approved").length}</span>
             </div>
             <div className="px-6 py-2 flex flex-col items-center">
               <span className="text-xs font-semibold text-slate-500 uppercase mb-1">반려</span>
-              <span className="text-xl font-bold text-red-600">1</span>
+              <span className="text-xl font-bold text-red-600">{snapshots.filter(s => s.status === "rejected").length}</span>
             </div>
           </div>
         </div>
@@ -178,11 +187,17 @@ export default function SnapshotsPage() {
 
               {selectedSnapshot.status === "pending" ? (
                 <div className="flex gap-3 pt-6 border-t border-slate-200 shrink-0">
-                  <button className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-xl transition-colors border border-red-200">
+                  <button 
+                    onClick={() => handleStatusChange(selectedSnapshot.id, "rejected")}
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-xl transition-colors border border-red-200"
+                  >
                     <X className="w-5 h-5" />
                     반려하기
                   </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg shadow-green-600/20 transition-all border border-green-600">
+                  <button 
+                    onClick={() => handleStatusChange(selectedSnapshot.id, "approved")}
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg shadow-green-600/20 transition-all border border-green-600"
+                  >
                     <Check className="w-5 h-5" />
                     승인하기
                   </button>
