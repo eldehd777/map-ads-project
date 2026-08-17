@@ -1,12 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Store, User, MapPin } from "lucide-react";
 import { clsx } from "clsx";
 
 export default function Header() {
+  const pathname = usePathname();
   const [mode, setMode] = useState<"creator" | "brand">("creator");
+
+  // Sync mode based on current URL path
+  useEffect(() => {
+    if (pathname.startsWith("/showcase") || pathname.startsWith("/campaigns/manage") || pathname.startsWith("/snapshots")) {
+      setMode("brand");
+    } else if (pathname === "/" || pathname.startsWith("/dashboard") || pathname.startsWith("/profile")) {
+      setMode("creator");
+    }
+  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -18,13 +29,15 @@ export default function Header() {
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
             {mode === "creator" ? (
               <>
-                <Link href="/campaigns" className="text-slate-600 hover:text-slate-900 transition-colors">내 주변 캠페인</Link>
-                <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 transition-colors">내 진행 상황</Link>
+                <Link href="/" className={clsx("transition-colors", pathname === "/" ? "text-blue-600 font-bold" : "text-slate-600 hover:text-slate-900")}>내 주변 캠페인</Link>
+                <Link href="/dashboard" className={clsx("transition-colors", pathname.startsWith("/dashboard") ? "text-blue-600 font-bold" : "text-slate-600 hover:text-slate-900")}>내 진행 상황</Link>
+                <Link href="/profile" className={clsx("transition-colors", pathname.startsWith("/profile") ? "text-blue-600 font-bold" : "text-slate-600 hover:text-slate-900")}>내 친구 프로필</Link>
               </>
             ) : (
               <>
-                <Link href="/showcase" className="text-slate-600 hover:text-slate-900 transition-colors">크리에이터 쇼케이스</Link>
-                <Link href="/campaigns/manage" className="text-slate-600 hover:text-slate-900 transition-colors">캠페인 관리</Link>
+                <Link href="/showcase" className={clsx("transition-colors", pathname.startsWith("/showcase") ? "text-blue-600 font-bold" : "text-slate-600 hover:text-slate-900")}>크리에이터 쇼케이스</Link>
+                <Link href="/campaigns/manage" className={clsx("transition-colors", pathname.startsWith("/campaigns/manage") ? "text-blue-600 font-bold" : "text-slate-600 hover:text-slate-900")}>캠페인 관리</Link>
+                <Link href="/snapshots" className={clsx("transition-colors", pathname.startsWith("/snapshots") ? "text-blue-600 font-bold" : "text-slate-600 hover:text-slate-900")}>스냅샷 관리</Link>
               </>
             )}
           </nav>
