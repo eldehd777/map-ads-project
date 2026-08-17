@@ -44,11 +44,19 @@ export default function Home() {
               // @ts-ignore
               const locPosition = new window.kakao.maps.LatLng(lat, lon);
               
+              // 파란색 내 위치 커스텀 마커 이미지
+              const imageSrc = 'data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"%3E%3Ccircle cx="16" cy="16" r="10" fill="%233b82f6" stroke="%23ffffff" stroke-width="4" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.3))"/%3E%3C/svg%3E';
+              // @ts-ignore
+              const imageSize = new window.kakao.maps.Size(32, 32);
+              // @ts-ignore
+              const markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize);
+              
               // 마커를 생성합니다
               // @ts-ignore
               const marker = new window.kakao.maps.Marker({
                 map: map,
-                position: locPosition
+                position: locPosition,
+                image: markerImage
               });
               
               // 지도 중심좌표를 접속위치로 변경합니다
