@@ -9,7 +9,7 @@ export default function Showcase() {
       category: "푸드/먹방",
       subscribers: "15만명",
       tags: ["대식가", "로컬맛집", "ASMR"],
-      imageUrl: "/placeholder.jpg",
+      imageUrl: "https://picsum.photos/600/400?random=11",
       rating: 4.9,
     },
     {
@@ -18,7 +18,7 @@ export default function Showcase() {
       category: "뷰티/패션",
       subscribers: "8만명",
       tags: ["스킨케어", "올리브영추천", "다이어트"],
-      imageUrl: "/placeholder.jpg",
+      imageUrl: "https://picsum.photos/600/400?random=12",
       rating: 4.7,
     },
     {
@@ -27,7 +27,7 @@ export default function Showcase() {
       category: "스포츠/피트니스",
       subscribers: "21만명",
       tags: ["헬린이", "오운완", "식단"],
-      imageUrl: "/placeholder.jpg",
+      imageUrl: "https://picsum.photos/600/400?random=13",
       rating: 5.0,
     },
     {
@@ -36,7 +36,7 @@ export default function Showcase() {
       category: "여행/일상",
       subscribers: "5만명",
       tags: ["신상카페", "데이트코스", "감성사진"],
-      imageUrl: "/placeholder.jpg",
+      imageUrl: "https://picsum.photos/600/400?random=14",
       rating: 4.8,
     }
   ];

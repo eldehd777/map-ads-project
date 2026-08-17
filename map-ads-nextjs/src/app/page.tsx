@@ -1,7 +1,25 @@
+"use client";
+import { useEffect, useRef } from "react";
 import { MapPin, Filter, Search } from "lucide-react";
 import CampaignCard from "@/components/CampaignCard";
 
 export default function Home() {
+  const mapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Initialize Naver Map
+    // @ts-ignore
+    if (window.naver && window.naver.maps && mapRef.current) {
+      const mapOptions = {
+        // @ts-ignore
+        center: new window.naver.maps.LatLng(37.3595704, 127.105399),
+        zoom: 14
+      };
+      // @ts-ignore
+      new window.naver.maps.Map(mapRef.current, mapOptions);
+    }
+  }, []);
+
   const campaigns = [
     {
       id: 1,
@@ -10,7 +28,7 @@ export default function Home() {
       distance: "도보 3분 거리 (150m)",
       reward: "음료 2잔 + 디저트 + 3만원",
       tags: ["카페", "신메뉴", "디저트", "릴스"],
-      imageUrl: "/placeholder.jpg",
+      imageUrl: "https://picsum.photos/600/400?random=1",
       isUrgent: true,
     },
     {
@@ -20,7 +38,7 @@ export default function Home() {
       distance: "도보 5분 거리 (300m)",
       reward: "1개월 무료 이용권 + 5만원",
       tags: ["오운완", "헬스장", "다이어트"],
-      imageUrl: "/placeholder.jpg",
+      imageUrl: "https://picsum.photos/600/400?random=2",
     },
     {
       id: 3,
@@ -29,7 +47,7 @@ export default function Home() {
       distance: "차로 10분 거리 (2.5km)",
       reward: "디너 2인 식사권 (30만원 상당)",
       tags: ["맛집", "오마카세", "데이트코스"],
-      imageUrl: "/placeholder.jpg",
+      imageUrl: "https://picsum.photos/600/400?random=3",
     }
   ];
 
@@ -70,14 +88,7 @@ export default function Home() {
       
       {/* Map View */}
       <div className="hidden md:flex flex-1 bg-slate-100 relative items-center justify-center">
-        <div className="absolute inset-0 z-0">
-          {/* We will embed the Naver map here. For now, a placeholder */}
-          <div className="w-full h-full bg-[#E8EDF4] flex flex-col items-center justify-center">
-            <MapPin className="w-12 h-12 text-slate-300 mb-4" />
-            <p className="text-slate-500 font-medium">지도 API 연동 대기 중...</p>
-            <p className="text-slate-400 text-sm mt-1">이전에 작업한 map_ads 코드가 여기에 들어갑니다.</p>
-          </div>
-        </div>
+        <div ref={mapRef} className="absolute inset-0 z-0" />
       </div>
     </div>
   );

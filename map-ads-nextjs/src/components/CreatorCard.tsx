@@ -13,11 +13,8 @@ export default function CreatorCard({ name, category, subscribers, tags, imageUr
   return (
     <div className="group relative bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-slate-300 transition-all duration-300 flex flex-col">
       <div className="aspect-[4/3] w-full bg-slate-100 relative overflow-hidden">
-        {/* Placeholder for image */}
+        <img src={imageUrl} alt={name} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent z-10" />
-        <div className="absolute inset-0 flex items-center justify-center text-slate-400">
-          <PlaySquare className="w-12 h-12 opacity-50" />
-        </div>
         <div className="absolute bottom-3 left-3 right-3 z-20 flex justify-between items-end">
           <span className="px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-lg text-white text-xs font-medium border border-white/20">
             {category}
