@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCampaignStore } from "@/store/useCampaignStore";
 import { Users, Store, Activity, DollarSign, ShieldAlert, Zap } from "lucide-react";

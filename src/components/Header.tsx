@@ -5,13 +5,24 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Store, User, Shield, ChevronDown, Menu } from "lucide-react";
 import { clsx } from "clsx";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { currentUser, logout, login } = useAuthStore();
   const [mode, setMode] = useState<"creator" | "brand" | "admin">("creator");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  // Handle Logout
+  const handleLogout = () => {
+    setIsProfileOpen(false);
+    logout();
+    router.push("/");
+  };
 
   // Sync mode based on current URL path
   useEffect(() => {
@@ -94,26 +105,59 @@ export default function Header() {
         <div className="flex items-center gap-3">
           {/* Profile Dropdown */}
           <div className="relative">
-            <button 
-              onClick={() => setIsProfileOpen(!isProfileOpen)} 
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-slate-900 text-white font-bold shadow-sm hover:scale-105 transition-transform"
-            >
-              C
-            </button>
-            {isProfileOpen && (
+            {currentUser ? (
               <>
-                <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
-                <div className="absolute top-full right-0 mt-2 w-48 bg-white shadow-xl rounded-2xl border border-slate-100 py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
-                  <div className="px-4 py-3 border-b border-slate-50 mb-1">
-                    <p className="text-sm font-bold text-slate-900">Charles</p>
-                    <p className="text-xs text-slate-500">charles@example.com</p>
-                  </div>
-                  <Link href="/profile" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700">프로필 및 인사이트</Link>
-                  <Link href="/dashboard" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700">내 진행 상황</Link>
-                  <div className="h-px bg-slate-100 my-1" />
-                  <button onClick={() => setIsProfileOpen(false)} className="w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-red-600">로그아웃</button>
-                </div>
+                <button 
+                  onClick={() => setIsProfileOpen(!isProfileOpen)} 
+                  className="flex items-center justify-center w-9 h-9 rounded-full bg-slate-900 text-white font-bold shadow-sm hover:scale-105 transition-transform"
+                >
+                  {currentUser.avatar ? (
+                    <img src={currentUser.avatar} alt="Avatar" className="w-9 h-9 rounded-full" />
+                  ) : (
+                    currentUser.name.charAt(0).toUpperCase()
+                  )}
+                </button>
+                {isProfileOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
+                    <div className="absolute top-full right-0 mt-2 w-48 bg-white shadow-xl rounded-2xl border border-slate-100 py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
+                      <div className="px-4 py-3 border-b border-slate-50 mb-1">
+                        <p className="text-sm font-bold text-slate-900 truncate">{currentUser.name}</p>
+                        <p className="text-xs text-slate-500 truncate">{currentUser.email}</p>
+                      </div>
+                      {currentUser.role === "creator" && (
+                        <>
+                          <Link href="/profile" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700">마이 인사이트</Link>
+                          <Link href="/dashboard" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700">내 캠페인 현황</Link>
+                        </>
+                      )}
+                      <div className="h-px bg-slate-100 my-1" />
+                      <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors text-sm font-medium text-red-600">로그아웃</button>
+                    </div>
+                  </>
+                )}
               </>
+            ) : (
+              <button 
+                onClick={() => {
+                  const email = prompt("로그인할 이메일을 입력하세요 (새 이메일이면 계정이 생성됩니다):", "admin@hellads.com");
+                  if (email) {
+                    const success = login(email);
+                    if (!success) {
+                      const name = prompt("새 계정의 닉네임을 입력하세요:");
+                      if (name) {
+                        const roleInput = prompt("역할을 입력하세요 (creator / brand / admin):", "creator");
+                        const role = (roleInput === "admin" || roleInput === "brand") ? roleInput : "creator";
+                        useAuthStore.getState().register({ email, name, role, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=" + email });
+                        login(email);
+                      }
+                    }
+                  }
+                }}
+                className="px-4 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+              >
+                로그인
+              </button>
             )}
           </div>
 
