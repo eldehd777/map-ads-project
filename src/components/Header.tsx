@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -30,19 +30,19 @@ export default function Header() {
         <div className="flex items-center gap-4 sm:gap-8">
           
           {/* Logo & Workspace Switcher */}
-          <div className="relative">
+          <div className="relative flex items-center gap-2 sm:gap-3">
+            <Link href="/" className="hover:opacity-80 transition-opacity">
+              <span className="text-xl font-black tracking-tight text-slate-900">Hell Ads</span>
+            </Link>
+            <span className="text-xl font-light text-slate-300 hidden sm:inline">/</span>
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)} 
-              className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity"
+              className="flex items-center gap-1.5 text-slate-600 hover:text-slate-900 transition-colors"
             >
-              <span className="text-xl font-black tracking-tight text-slate-900">Hell Ads</span>
-              <span className="text-xl font-light text-slate-300 hidden sm:inline">/</span>
-              <div className="flex items-center gap-1.5 text-slate-600 hover:text-slate-900 transition-colors">
-                {mode === "creator" && <span className="text-sm font-bold">크리에이터</span>}
-                {mode === "brand" && <span className="text-sm font-bold">광고주</span>}
-                {mode === "admin" && <span className="text-sm font-bold text-red-600">어드민</span>}
-                <ChevronDown className="w-4 h-4 text-slate-400" />
-              </div>
+              {mode === "creator" && <span className="text-sm font-bold">크리에이터</span>}
+              {mode === "brand" && <span className="text-sm font-bold">광고주</span>}
+              {mode === "admin" && <span className="text-sm font-bold text-red-600">어드민</span>}
+              <ChevronDown className="w-4 h-4 text-slate-400" />
             </button>
 
             {/* Dropdown Menu */}
