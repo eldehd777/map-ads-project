@@ -1,41 +1,81 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Image as ImageIcon, Plus, Trash2, Calendar, MapPin, Store, Tag, Loader2 } from "lucide-react";
+import { ArrowLeft, Store, Tag, MapPin, Loader2, Calendar } from "lucide-react";
 import { useCampaignStore } from "@/store/useCampaignStore";
+
+declare global {
+  interface Window {
+    kakao: any;
+  }
+}
 
 export default function CreateCampaignPage() {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { addCampaign } = useCampaignStore();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    storeName: "",
+    title: "",
+    reward: "",
+    address: "",
+    tags: "",
+    budget: "",
+    endDate: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Create dummy new campaign
-    const newCampaign = {
-      id: Date.now(),
-      storeName: "새로 등록된 테스트 매장",
-      title: "신규 캠페인 테스트 모집",
-      distance: "방금 등록됨",
-      reward: "테스트 리워드 제공",
-      tags: ["신규등록", "테스트"],
-      imageUrl: `https://picsum.photos/600/400?random=${Date.now()}`,
-      status: "active" as const,
-      applicants: 0,
-      views: "0",
-      budget: "미정",
-      endDate: "2024-12-31"
-    };
 
-    setTimeout(() => {
-      addCampaign(newCampaign);
-      alert("캠페인이 성공적으로 등록되었습니다!");
-      router.push("/campaigns/manage");
-    }, 1000);
+    if (!window.kakao || !window.kakao.maps || !window.kakao.maps.services) {
+      alert("카카오맵 서비스가 아직 로드되지 않았습니다. 잠시 후 다시 시도해주세요.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const geocoder = new window.kakao.maps.services.Geocoder();
+    
+    geocoder.addressSearch(formData.address, function(result: any, status: any) {
+      if (status === window.kakao.maps.services.Status.OK) {
+        const lat = parseFloat(result[0].y);
+        const lng = parseFloat(result[0].x);
+
+        const tagsArray = formData.tags.split(",").map(tag => tag.trim()).filter(Boolean);
+
+        const newCampaign = {
+          id: Date.now().toString(),
+          storeName: formData.storeName,
+          title: formData.title,
+          distance: "방금 등록됨",
+          reward: formData.reward,
+          tags: tagsArray.length > 0 ? tagsArray : ["신규"],
+          imageUrl: `https://picsum.photos/600/400?random=${Date.now()}`,
+          status: "active" as const,
+          applicants: 0,
+          views: "0",
+          budget: formData.budget || "미정",
+          endDate: formData.endDate || "2024-12-31",
+          lat: lat,
+          lng: lng,
+        };
+
+        addCampaign(newCampaign);
+        alert("캠페인이 성공적으로 등록되었습니다!");
+        router.push("/campaigns/manage");
+      } else {
+        alert("주소를 찾을 수 없습니다. 정확한 도로명/지번 주소를 입력해주세요.");
+        setIsSubmitting(false);
+      }
+    });
   };
 
   return (
@@ -55,153 +95,122 @@ export default function CreateCampaignPage() {
 
         <form onSubmit={handleSubmit} className="space-y-8 pb-24">
           
-          {/* Section 1: Basic Info */}
           <section className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm">
             <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <Store className="w-5 h-5 text-blue-600" /> 기본 정보
-            </h2>
-            
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">캠페인 제목 <span className="text-red-500">*</span></label>
-                <input 
-                  type="text" 
-                  placeholder="예) 신메뉴 '흑임자 라떼' 릴스 리뷰어 모집" 
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">매장명 <span className="text-red-500">*</span></label>
-                  <input 
-                    type="text" 
-                    placeholder="매장 이름을 입력하세요" 
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">카테고리 <span className="text-red-500">*</span></label>
-                  <select className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none">
-                    <option value="">카테고리 선택</option>
-                    <option value="food">맛집/카페</option>
-                    <option value="beauty">뷰티/패션</option>
-                    <option value="life">생활/가전</option>
-                    <option value="culture">문화/공연</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">매장 주소 <span className="text-red-500">*</span></label>
-                <div className="flex gap-2">
-                  <input 
-                    type="text" 
-                    placeholder="주소를 검색하거나 입력하세요" 
-                    className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                  />
-                  <button type="button" className="px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl border border-slate-200 hover:bg-slate-200 transition-colors">
-                    주소 검색
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Section 2: Reward & Mission */}
-          <section className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <Tag className="w-5 h-5 text-emerald-600" /> 제공 혜택 및 미션
-            </h2>
-            
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">제공 혜택 (리워드) <span className="text-red-500">*</span></label>
-                <input 
-                  type="text" 
-                  placeholder="예) 시그니처 세트 메뉴 2인권 + 원고료 3만원" 
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">필수 해시태그</label>
-                <input 
-                  type="text" 
-                  placeholder="#강남맛집 #데이트코스 (띄어쓰기로 구분)" 
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">상세 미션 및 가이드라인 <span className="text-red-500">*</span></label>
-                <textarea 
-                  rows={5}
-                  placeholder="크리에이터가 수행해야 할 미션(사진 몇 장, 동영상 필수 여부 등)을 상세히 적어주세요." 
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none"
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* Section 3: Conditions */}
-          <section className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-amber-500" /> 모집 조건
+              <Store className="w-6 h-6 text-blue-600" />
+              업체 및 캠페인 기본 정보
             </h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">모집 인원 <span className="text-red-500">*</span></label>
-                <div className="flex items-center gap-2">
-                  <input 
-                    type="number" 
-                    placeholder="0" 
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-right"
-                  />
-                  <span className="text-slate-600 font-medium">명</span>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">모집 마감일 <span className="text-red-500">*</span></label>
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-bold text-slate-700 mb-2">업체명 (가게 이름) *</label>
                 <input 
-                  type="date" 
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  type="text"
+                  name="storeName"
+                  value={formData.storeName}
+                  onChange={handleChange}
+                  placeholder="예: 홍대 맛집 마라탕"
+                  required
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                 />
               </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-bold text-slate-700 mb-2">캠페인 제목 *</label>
+                <input 
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  placeholder="예: 신메뉴 마라샹궈 리뷰어 대모집!"
+                  required
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4 text-slate-400" /> 실제 주소 *
+                </label>
+                <p className="text-xs text-slate-500 mb-2">카카오맵에서 핀(마커)을 꽂기 위해 정확한 도로명 주소나 지번 주소를 입력해주세요.</p>
+                <input 
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="예: 서울 마포구 홍익로 10"
+                  required
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">제공 내역 (리워드) *</label>
+                <input 
+                  type="text"
+                  name="reward"
+                  value={formData.reward}
+                  onChange={handleChange}
+                  placeholder="예: 3만원 식사권 + 음료"
+                  required
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                  <Tag className="w-4 h-4 text-slate-400" /> 태그 (쉼표로 구분)
+                </label>
+                <input 
+                  type="text"
+                  name="tags"
+                  value={formData.tags}
+                  onChange={handleChange}
+                  placeholder="예: 맛집, 마라탕, 홍대"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">예산 (선택)</label>
+                <input 
+                  type="text"
+                  name="budget"
+                  value={formData.budget}
+                  onChange={handleChange}
+                  placeholder="예: 총 30만원"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                  <Calendar className="w-4 h-4 text-slate-400" /> 마감일 (선택)
+                </label>
+                <input 
+                  type="date"
+                  name="endDate"
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                />
+              </div>
+
             </div>
           </section>
 
-          {/* Section 4: Images */}
-          <section className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <ImageIcon className="w-5 h-5 text-purple-600" /> 대표 이미지 등록
-            </h2>
-            
-            <div className="w-full h-48 border-2 border-dashed border-slate-300 rounded-2xl bg-slate-50 flex flex-col items-center justify-center text-center hover:bg-slate-100 hover:border-blue-400 transition-all cursor-pointer">
-              <ImageIcon className="w-10 h-10 text-slate-400 mb-3" />
-              <p className="text-sm font-semibold text-slate-700">클릭하거나 이미지를 끌어다 놓으세요</p>
-              <p className="text-xs text-slate-500 mt-1">권장 사이즈: 1200 x 800px (최대 5MB)</p>
-            </div>
-          </section>
-
-        </form>
-
-        {/* Fixed Bottom Bar */}
-        <div className="fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-40">
-          <div className="max-w-4xl mx-auto flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
-            <button 
-              type="button"
-              disabled={isSubmitting}
-              className="px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors w-full sm:w-auto disabled:opacity-50"
+          {/* Fixed Bottom Bar */}
+          <div className="fixed bottom-0 left-0 lg:left-64 right-0 p-4 bg-white/80 backdrop-blur-lg border-t border-slate-200 flex justify-end gap-3 z-40">
+            <Link 
+              href="/campaigns/manage" 
+              className="px-6 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
             >
-              임시저장
-            </button>
+              취소
+            </Link>
             <button 
-              type="submit"
+              type="submit" 
               disabled={isSubmitting}
-              className="flex items-center justify-center gap-2 px-8 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-600/20 transition-all w-full sm:w-auto disabled:opacity-50"
+              className="px-8 py-3 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-lg shadow-blue-600/20 disabled:opacity-70"
             >
               {isSubmitting ? (
                 <>
@@ -209,12 +218,12 @@ export default function CreateCampaignPage() {
                   등록 중...
                 </>
               ) : (
-                "등록 완료하기"
+                "캠페인 등록하기"
               )}
             </button>
           </div>
-        </div>
 
+        </form>
       </div>
     </div>
   );
