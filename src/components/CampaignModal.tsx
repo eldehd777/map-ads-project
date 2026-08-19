@@ -1,5 +1,6 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { X, MapPin, Clock, ArrowRight, Loader2 } from "lucide-react";
+import { useCampaignStore } from "@/store/useCampaignStore";
 
 interface CampaignModalProps {
   campaign: any;
@@ -13,6 +14,8 @@ export default function CampaignModal({ campaign, isOpen, onClose }: CampaignMod
 
   if (!isOpen || !campaign) return null;
 
+  const { addApplication } = useCampaignStore();
+
   const handleApply = () => {
     if (!appealMessage.trim()) {
       alert("광고주에게 어필할 멘트를 짧게라도 작성해주세요!");
@@ -21,6 +24,16 @@ export default function CampaignModal({ campaign, isOpen, onClose }: CampaignMod
     
     setIsApplying(true);
     setTimeout(() => {
+      addApplication({
+        id: Date.now(),
+        campaignId: campaign.id,
+        name: "신규 리뷰어",
+        role: "새로운 크리에이터",
+        followers: "1.5k",
+        message: appealMessage,
+        status: "pending",
+        avatar: "https://picsum.photos/200/200?random=" + Math.floor(Math.random() * 100)
+      });
       alert("성공적으로 캠페인에 신청되었습니다!");
       setIsApplying(false);
       setAppealMessage("");

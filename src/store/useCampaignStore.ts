@@ -1,4 +1,4 @@
-import { create } from "zustand";
+﻿import { create } from "zustand";
 
 export interface Campaign {
   id: number | string;
@@ -151,20 +151,45 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
   }
 ];
 
+export interface Application {
+  id: number | string;
+  campaignId: number | string;
+  name: string;
+  role: string;
+  followers: string;
+  message: string;
+  status: "pending" | "approved" | "rejected" | "canceled";
+  avatar: string;
+}
+
+const INITIAL_APPLICATIONS: Application[] = [
+  { id: 1, campaignId: 1, name: "푸드트래블러", role: "맛집 전문 리뷰어", followers: "12.4k", message: "정말 기대되는 캠페인이네요! 제 유튜브와 인스타에 정성껏 리뷰하겠습니다.", status: "pending", avatar: "https://picsum.photos/200/200?random=11" },
+  { id: 2, campaignId: 1, name: "뷰티여신", role: "뷰티/패션 크리에이터", followers: "8.2k", message: "평소 관심있던 브랜드라 꼭 참여하고 싶습니다. 고화질 사진 약속드려요.", status: "approved", avatar: "https://picsum.photos/200/200?random=12" },
+  { id: 3, campaignId: 1, name: "동네카페탐방", role: "라이프스타일", followers: "3.1k", message: "집 근처라 방문하기 너무 좋습니다. 로컬 찐리뷰 남길게요!", status: "pending", avatar: "https://picsum.photos/200/200?random=14" },
+];
+
 interface CampaignStore {
   campaigns: Campaign[];
+  applications: Application[];
   addCampaign: (campaign: Campaign) => void;
   updateCampaign: (id: number | string, updates: Partial<Campaign>) => void;
   deleteCampaign: (id: number | string) => void;
+  addApplication: (app: Application) => void;
+  updateApplicationStatus: (id: number | string, status: Application["status"]) => void;
 }
 
 export const useCampaignStore = create<CampaignStore>((set) => ({
   campaigns: INITIAL_CAMPAIGNS,
+  applications: INITIAL_APPLICATIONS,
   addCampaign: (campaign) => set((state) => ({ campaigns: [campaign, ...state.campaigns] })),
   updateCampaign: (id, updates) => set((state) => ({
     campaigns: state.campaigns.map(c => c.id === id ? { ...c, ...updates } : c)
   })),
   deleteCampaign: (id) => set((state) => ({
     campaigns: state.campaigns.filter(c => c.id !== id)
+  })),
+  addApplication: (app) => set((state) => ({ applications: [app, ...state.applications] })),
+  updateApplicationStatus: (id, status) => set((state) => ({
+    applications: state.applications.map(a => a.id === id ? { ...a, status } : a)
   })),
 }));

@@ -1,42 +1,34 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
-
 import Link from "next/link";
 import { Plus, Search, Filter, MoreVertical, Users, Eye, TrendingUp, Calendar, X, Check, XCircle } from "lucide-react";
 import { useCampaignStore } from "@/store/useCampaignStore";
 
-const DUMMY_APPLICANTS = [
-  { id: 1, name: "푸드트래블러", role: "맛집 전문 리뷰어", followers: "12.4k", message: "정말 기대되는 캠페인이네요! 제 유튜브와 인스타에 정성껏 리뷰하겠습니다.", status: "pending", avatar: "https://picsum.photos/200/200?random=11" },
-  { id: 2, name: "뷰티여신", role: "뷰티/패션 크리에이터", followers: "8.2k", message: "평소 관심있던 브랜드라 꼭 참여하고 싶습니다. 고화질 사진 약속드려요.", status: "approved", avatar: "https://picsum.photos/200/200?random=12" },
-  { id: 3, name: "동네카페탐방", role: "라이프스타일", followers: "3.1k", message: "집 근처라 방문하기 너무 좋습니다. 로컬 찐리뷰 남길게요!", status: "pending", avatar: "https://picsum.photos/200/200?random=14" },
-];
-
 export default function CampaignsManagePage() {
-  const { campaigns, updateCampaign } = useCampaignStore();
+  const { campaigns, updateCampaign, applications, updateApplicationStatus } = useCampaignStore();
   const [openMenuId, setOpenMenuId] = useState<number | string | null>(null);
   const [viewApplicantsFor, setViewApplicantsFor] = useState<number | string | null>(null);
-  const [applicants, setApplicants] = useState(DUMMY_APPLICANTS);
   const [modalTab, setModalTab] = useState<"pending" | "approved">("pending");
 
+  const applicants = applications.filter(a => a.campaignId === viewApplicantsFor);
+
   const handleApprove = (id: number) => {
-    setApplicants(prev => prev.map(a => a.id === id ? { ...a, status: "approved" } : a));
+    updateApplicationStatus(id, "approved");
   };
 
   const handleReject = (id: number) => {
-    setApplicants(prev => prev.map(a => a.id === id ? { ...a, status: "rejected" } : a));
+    updateApplicationStatus(id, "rejected");
   };
 
   const handleCancel = (id: number) => {
-    if (confirm("정말로 이 지원자의 승인을 취소하시겠습니까?")) {
-      setApplicants(prev => prev.map(a => a.id === id ? { ...a, status: "canceled" } : a));
+    if (confirm("정말로 해당 지원자의 승인을 취소하시겠습니까?")) {
+      updateApplicationStatus(id, "canceled");
     }
   };
 
   const filteredApplicants = applicants.filter(a => a.status === modalTab);
 
-  return (
-    <div className="flex-1 bg-slate-50 overflow-y-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Header */}
