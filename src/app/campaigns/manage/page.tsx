@@ -13,15 +13,15 @@ export default function CampaignsManagePage() {
 
   const applicants = applications.filter(a => a.campaignId === viewApplicantsFor);
 
-  const handleApprove = (id: number) => {
+  const handleApprove = (id: number | string) => {
     updateApplicationStatus(id, "approved");
   };
 
-  const handleReject = (id: number) => {
+  const handleReject = (id: number | string) => {
     updateApplicationStatus(id, "rejected");
   };
 
-  const handleCancel = (id: number) => {
+  const handleCancel = (id: number | string) => {
     if (confirm("정말로 해당 지원자의 승인을 취소하시겠습니까?")) {
       updateApplicationStatus(id, "canceled");
     }
@@ -29,7 +29,11 @@ export default function CampaignsManagePage() {
 
   const filteredApplicants = applicants.filter(a => a.status === modalTab);
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        return (
+
+          <div className="min-h-[calc(100vh-64px)] bg-slate-50">
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -282,7 +286,7 @@ export default function CampaignsManagePage() {
                     </div>
 
                   </div>
-                ))}
+                )))}
               </div>
             </div>
           </div>
