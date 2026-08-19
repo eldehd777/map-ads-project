@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 };
 
 import Header from "@/components/Header";
+import { Providers } from "@/components/Providers";
 import Script from "next/script";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -31,8 +32,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           strategy="beforeInteractive"
           src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=8890c018c4dcb56573207716f39e4487&autoload=false&libraries=services`}
         />
+        <Providers>
         <Header />
         <main className="flex-1 flex flex-col">{children}</main>
+        </Providers>
       </body>
     </html>
   );

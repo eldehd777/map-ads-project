@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Mail, Lock, User as UserIcon, ArrowRight, ShieldCheck, UserCircle2 } from "lucide-react";
 
@@ -44,18 +45,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = () => {
-    const googleEmail = "google_tester_" + Math.floor(Math.random() * 1000) + "@gmail.com";
-    const googleName = "구글 테스터";
-    
-    // Register mock Google account
-    register({
-      email: googleEmail,
-      name: googleName,
-      role: "creator", // default to creator for social login
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=" + googleEmail + "&backgroundColor=b6e3f4",
-    });
-    login(googleEmail);
-    router.push("/");
+    signIn("google", { callbackUrl: "/" });
   };
 
   return (

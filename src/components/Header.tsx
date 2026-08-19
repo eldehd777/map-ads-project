@@ -7,20 +7,44 @@ import { Store, User, Shield, ChevronDown, Menu } from "lucide-react";
 import { clsx } from "clsx";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { currentUser, logout, login } = useAuthStore();
+  const { data: session, status } = useSession();
+  const { currentUser, logout, login, register, users } = useAuthStore();
   const [mode, setMode] = useState<"creator" | "brand" | "admin">("creator");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
+  // Sync NextAuth Session with Zustand
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.email) {
+      if (!currentUser || currentUser.email !== session.user.email) {
+        const success = login(session.user.email);
+        if (!success) {
+          // If not found in Zustand, register automatically
+          register({
+            email: session.user.email,
+            name: session.user.name || "구글 유저",
+            role: "creator", // Default role
+            avatar: session.user.image || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + session.user.email,
+          });
+          login(session.user.email);
+        }
+      }
+    }
+  }, [status, session, currentUser, login, register]);
+
   // Handle Logout
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsProfileOpen(false);
-    logout();
+    logout(); // Clear Zustand
+    if (status === "authenticated") {
+      await signOut({ redirect: false }); // Clear NextAuth
+    }
     router.push("/");
   };
 
