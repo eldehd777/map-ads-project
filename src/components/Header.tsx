@@ -19,9 +19,10 @@ export default function Header() {
       setMode("admin");
     } else if (pathname.startsWith("/showcase") || pathname.startsWith("/campaigns/manage") || pathname.startsWith("/snapshots")) {
       setMode("brand");
-    } else if (pathname === "/" || pathname.startsWith("/dashboard") || pathname.startsWith("/profile")) {
+    } else if (pathname.startsWith("/dashboard") || pathname.startsWith("/profile")) {
       setMode("creator");
     }
+    // Note: pathname === "/" is intentionally omitted so the user keeps their current role when viewing the map.
   }, [pathname]);
 
   return (
@@ -51,15 +52,15 @@ export default function Header() {
                 <div className="fixed inset-0 z-40" onClick={() => setIsMenuOpen(false)} />
                 <div className="absolute top-full left-0 mt-2 w-48 bg-white shadow-xl rounded-2xl border border-slate-100 py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
                   <div className="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">모드 전환</div>
-                  <Link href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors">
+                  <Link href="/" onClick={() => { setIsMenuOpen(false); setMode("creator"); }} className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors">
                     <div className="p-1.5 bg-blue-50 text-blue-600 rounded-md"><User className="w-4 h-4" /></div>
                     <span className="text-sm font-bold text-slate-700">크리에이터</span>
                   </Link>
-                  <Link href="/campaigns/manage" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors">
+                  <Link href="/campaigns/manage" onClick={() => { setIsMenuOpen(false); setMode("brand"); }} className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors">
                     <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-md"><Store className="w-4 h-4" /></div>
                     <span className="text-sm font-bold text-slate-700">광고주</span>
                   </Link>
-                  <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors">
+                  <Link href="/admin" onClick={() => { setIsMenuOpen(false); setMode("admin"); }} className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors">
                     <div className="p-1.5 bg-red-50 text-red-600 rounded-md"><Shield className="w-4 h-4" /></div>
                     <span className="text-sm font-bold text-slate-700">어드민 (마스터)</span>
                   </Link>
