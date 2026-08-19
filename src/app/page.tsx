@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useRef, useState } from "react";
 import { MapPin, Filter, Search } from "lucide-react";
 import CampaignCard from "@/components/CampaignCard";
@@ -21,6 +21,10 @@ export default function Home() {
   const handleTouchMove = (e: React.TouchEvent) => {
     touchEndY.current = e.targetTouches[0].clientY;
   };
+
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const mapInstanceRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
 
   const handleTouchEnd = () => {
     if (touchStartY.current === null || touchEndY.current === null) return;
