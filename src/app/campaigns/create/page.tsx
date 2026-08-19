@@ -36,15 +36,16 @@ export default function CreateCampaignPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    if (!window.kakao || !window.kakao.maps || !window.kakao.maps.services) {
-      alert("카카오맵 서비스가 아직 로드되지 않았습니다. 잠시 후 다시 시도해주세요.");
+    if (!window.kakao || !window.kakao.maps) {
+      alert("카카오맵 스크립트를 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
       setIsSubmitting(false);
       return;
     }
 
-    const geocoder = new window.kakao.maps.services.Geocoder();
-    
-    geocoder.addressSearch(formData.address, function(result: any, status: any) {
+    window.kakao.maps.load(() => {
+      const geocoder = new window.kakao.maps.services.Geocoder();
+      
+      geocoder.addressSearch(formData.address, function(result: any, status: any) {
       if (status === window.kakao.maps.services.Status.OK) {
         const lat = parseFloat(result[0].y);
         const lng = parseFloat(result[0].x);
@@ -75,6 +76,7 @@ export default function CreateCampaignPage() {
         alert("주소를 찾을 수 없습니다. 정확한 도로명/지번 주소를 입력해주세요.");
         setIsSubmitting(false);
       }
+    });
     });
   };
 
