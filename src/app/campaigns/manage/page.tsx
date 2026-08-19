@@ -282,7 +282,7 @@ export default function CampaignsManagePage() {
                     </div>
 
                   </div>
-                )))}
+                ))}
               </div>
             </div>
           </div>
