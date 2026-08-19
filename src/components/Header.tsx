@@ -138,26 +138,12 @@ export default function Header() {
                 )}
               </>
             ) : (
-              <button 
-                onClick={() => {
-                  const email = prompt("로그인할 이메일을 입력하세요 (새 이메일이면 계정이 생성됩니다):", "admin@hellads.com");
-                  if (email) {
-                    const success = login(email);
-                    if (!success) {
-                      const name = prompt("새 계정의 닉네임을 입력하세요:");
-                      if (name) {
-                        const roleInput = prompt("역할을 입력하세요 (creator / brand / admin):", "creator");
-                        const role = (roleInput === "admin" || roleInput === "brand") ? roleInput : "creator";
-                        useAuthStore.getState().register({ email, name, role, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=" + email });
-                        login(email);
-                      }
-                    }
-                  }
-                }}
-                className="px-4 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+              <Link 
+                href="/login"
+                className="px-4 py-2 text-sm font-bold text-white bg-slate-900 rounded-lg hover:bg-slate-800 transition-colors shadow-sm"
               >
-                로그인
-              </button>
+                로그인 / 가입
+              </Link>
             )}
           </div>
 
