@@ -71,7 +71,7 @@ export default function CampaignModal({ campaign, isOpen, onClose }: CampaignMod
           
           <div className="absolute bottom-6 left-6 right-6">
             <div className="flex flex-wrap gap-2 mb-3">
-              {campaign.tags.map((tag: string) => (
+              {campaign?.tags?.map((tag: string) => (
                 <span key={tag} className="px-2.5 py-1 bg-white/20 backdrop-blur-md text-white text-xs font-medium rounded-lg border border-white/20">
                   {tag}
                 </span>

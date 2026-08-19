@@ -1,4 +1,5 @@
 ﻿import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export interface Campaign {
   id: number | string;
@@ -18,8 +19,6 @@ export interface Campaign {
   lng?: number;
 }
 
-const INITIAL_CAMPAIGNS: Campaign[] = [];
-
 export interface Application {
   id: number | string;
   campaignId: number | string;
@@ -31,30 +30,47 @@ export interface Application {
   avatar: string;
 }
 
-const INITIAL_APPLICATIONS: Application[] = [];
+const INITIAL_CAMPAIGNS: Campaign[] = [];
 
-interface CampaignStore {
+interface CampaignState {
   campaigns: Campaign[];
   applications: Application[];
+  
   addCampaign: (campaign: Campaign) => void;
-  updateCampaign: (id: number | string, updates: Partial<Campaign>) => void;
-  deleteCampaign: (id: number | string) => void;
+  updateCampaignStatus: (id: string | number, status: Campaign["status"]) => void;
+  updateCampaign: (id: string | number, updates: Partial<Campaign>) => void;
+  deleteCampaign: (id: string | number) => void;
+  
   addApplication: (app: Application) => void;
-  updateApplicationStatus: (id: number | string, status: Application["status"]) => void;
+  updateApplicationStatus: (id: string | number, status: Application["status"]) => void;
 }
 
-export const useCampaignStore = create<CampaignStore>((set) => ({
-  campaigns: INITIAL_CAMPAIGNS,
-  applications: INITIAL_APPLICATIONS,
-  addCampaign: (campaign) => set((state) => ({ campaigns: [campaign, ...state.campaigns] })),
-  updateCampaign: (id, updates) => set((state) => ({
-    campaigns: state.campaigns.map(c => c.id === id ? { ...c, ...updates } : c)
-  })),
-  deleteCampaign: (id) => set((state) => ({
-    campaigns: state.campaigns.filter(c => c.id !== id)
-  })),
-  addApplication: (app) => set((state) => ({ applications: [app, ...state.applications] })),
-  updateApplicationStatus: (id, status) => set((state) => ({
-    applications: state.applications.map(a => a.id === id ? { ...a, status } : a)
-  })),
-}));
+export const useCampaignStore = create<CampaignState>()(
+  persist(
+    (set) => ({
+      campaigns: INITIAL_CAMPAIGNS,
+      applications: [],
+      
+      addCampaign: (campaign) => set((state) => ({ campaigns: [...state.campaigns, campaign] })),
+      updateCampaignStatus: (id, status) => set((state) => ({
+        campaigns: state.campaigns.map(c => c.id === id ? { ...c, status } : c)
+      })),
+      updateCampaign: (id, updates) => set((state) => ({
+        campaigns: state.campaigns.map(c => c.id === id ? { ...c, ...updates } : c)
+      })),
+      deleteCampaign: (id) => set((state) => ({
+        campaigns: state.campaigns.filter(c => c.id !== id)
+      })),
+      
+      addApplication: (app) => set((state) => ({ applications: [...state.applications, app] })),
+      updateApplicationStatus: (id, status) => set((state) => ({
+        applications: state.applications.map(app => 
+          app.id === id ? { ...app, status } : app
+        )
+      }))
+    }),
+    {
+      name: "campaign-store",
+    }
+  )
+);

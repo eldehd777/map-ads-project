@@ -1,4 +1,4 @@
-import { MapPin, Clock, ArrowRight } from "lucide-react";
+﻿import { MapPin, Clock, ArrowRight } from "lucide-react";
 
 interface CampaignCardProps {
   storeName: string;
@@ -44,7 +44,7 @@ export default function CampaignCard({ storeName, title, distance, reward, tags,
         </h3>
         
         <div className="flex flex-wrap gap-1.5 mb-4">
-          {tags.map(tag => (
+          {(tags || []).map(tag => (
             <span key={tag} className="px-2 py-0.5 bg-slate-50 border border-slate-100 text-slate-600 text-xs rounded-md">
               {tag}
             </span>
