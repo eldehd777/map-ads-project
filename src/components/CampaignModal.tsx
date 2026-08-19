@@ -11,10 +11,9 @@ interface CampaignModalProps {
 export default function CampaignModal({ campaign, isOpen, onClose }: CampaignModalProps) {
   const [isApplying, setIsApplying] = useState(false);
   const [appealMessage, setAppealMessage] = useState("");
+  const { addApplication } = useCampaignStore();
 
   if (!isOpen || !campaign) return null;
-
-  const { addApplication } = useCampaignStore();
 
   const handleApply = () => {
     if (!appealMessage.trim()) {

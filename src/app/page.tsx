@@ -4,6 +4,7 @@ import { MapPin, Filter, Search } from "lucide-react";
 import CampaignCard from "@/components/CampaignCard";
 import CampaignModal from "@/components/CampaignModal";
 import { useCampaignStore } from "@/store/useCampaignStore";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export default function Home() {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -205,20 +206,23 @@ export default function Home() {
             <span className="text-sm font-semibold text-slate-900">검색된 주변 캠페인 <span className="text-blue-600">{campaigns.length}개</span></span>
           </div>
           {campaigns.map((campaign) => (
-            <CampaignCard 
-              key={campaign.id} 
-              {...campaign} 
-              onViewDetail={() => setSelectedCampaign(campaign)}
-            />
+            <ErrorBoundary key={campaign.id}>
+              <CampaignCard 
+                {...campaign} 
+                onViewDetail={() => setSelectedCampaign(campaign)}
+              />
+            </ErrorBoundary>
           ))}
         </div>
       </div>
 
-      <CampaignModal 
-        campaign={selectedCampaign} 
-        isOpen={!!selectedCampaign} 
-        onClose={() => setSelectedCampaign(null)} 
-      />
+      <ErrorBoundary>
+        <CampaignModal 
+          campaign={selectedCampaign} 
+          isOpen={!!selectedCampaign} 
+          onClose={() => setSelectedCampaign(null)} 
+        />
+      </ErrorBoundary>
     </div>
   );
 }
