@@ -110,6 +110,7 @@ export default function CampaignsManagePage() {
                   <th className="px-6 py-4 whitespace-nowrap">캠페인명</th>
                   <th className="px-6 py-4 whitespace-nowrap">상태</th>
                   <th className="px-6 py-4 whitespace-nowrap">신청자</th>
+                  <th className="px-6 py-4 whitespace-nowrap">진행중</th>
                   <th className="px-6 py-4 whitespace-nowrap">조회수</th>
                   <th className="px-6 py-4 whitespace-nowrap">총 예산</th>
                   <th className="px-6 py-4 whitespace-nowrap">마감일</th>
@@ -129,11 +130,26 @@ export default function CampaignsManagePage() {
                     </td>
                     <td className="px-6 py-4">
                       <button 
-                        onClick={() => setViewApplicantsFor(campaign.id)}
+                        onClick={() => {
+                          setViewApplicantsFor(campaign.id);
+                          setModalTab("pending");
+                        }}
                         className="flex items-center gap-1.5 text-blue-600 font-bold hover:text-blue-700 hover:underline transition-all bg-blue-50 px-3 py-1.5 rounded-lg"
                       >
                         <Users className="w-4 h-4" />
-                        {campaign.applicants}명 보기
+                        {applications.filter(a => a.campaignId === campaign.id && a.status === "pending").length}명 보기
+                      </button>
+                    </td>
+                    <td className="px-6 py-4">
+                      <button 
+                        onClick={() => {
+                          setViewApplicantsFor(campaign.id);
+                          setModalTab("approved");
+                        }}
+                        className="flex items-center gap-1.5 text-emerald-600 font-bold hover:text-emerald-700 hover:underline transition-all bg-emerald-50 px-3 py-1.5 rounded-lg"
+                      >
+                        <Users className="w-4 h-4" />
+                        {applications.filter(a => a.campaignId === campaign.id && a.status === "approved").length}명 보기
                       </button>
                     </td>
                     <td className="px-6 py-4">

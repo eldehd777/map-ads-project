@@ -162,11 +162,7 @@ export interface Application {
   avatar: string;
 }
 
-const INITIAL_APPLICATIONS: Application[] = [
-  { id: 1, campaignId: 1, name: "푸드트래블러", role: "맛집 전문 리뷰어", followers: "12.4k", message: "정말 기대되는 캠페인이네요! 제 유튜브와 인스타에 정성껏 리뷰하겠습니다.", status: "pending", avatar: "https://picsum.photos/200/200?random=11" },
-  { id: 2, campaignId: 1, name: "뷰티여신", role: "뷰티/패션 크리에이터", followers: "8.2k", message: "평소 관심있던 브랜드라 꼭 참여하고 싶습니다. 고화질 사진 약속드려요.", status: "approved", avatar: "https://picsum.photos/200/200?random=12" },
-  { id: 3, campaignId: 1, name: "동네카페탐방", role: "라이프스타일", followers: "3.1k", message: "집 근처라 방문하기 너무 좋습니다. 로컬 찐리뷰 남길게요!", status: "pending", avatar: "https://picsum.photos/200/200?random=14" },
-];
+const INITIAL_APPLICATIONS: Application[] = [];
 
 interface CampaignStore {
   campaigns: Campaign[];
