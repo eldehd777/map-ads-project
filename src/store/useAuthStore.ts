@@ -12,6 +12,9 @@ export interface User {
   status: UserStatus;
   avatar?: string;
   createdAt: string;
+  instagram?: string;
+  youtube?: string;
+  blog?: string;
 }
 
 interface AuthState {
@@ -22,6 +25,7 @@ interface AuthState {
   login: (email: string) => boolean;
   logout: () => void;
   register: (user: Omit<User, "id" | "status" | "createdAt">) => User;
+  updateProfile: (data: Partial<User>) => void;
   
   // Admin Actions
   suspendUser: (id: string) => void;
@@ -80,6 +84,16 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () => {
         set({ currentUser: null });
+      },
+      updateProfile: (data) => {
+        set((state) => {
+          if (!state.currentUser) return state;
+          const updatedUser = { ...state.currentUser, ...data };
+          return {
+            currentUser: updatedUser,
+            users: state.users.map((u) => (u.id === updatedUser.id ? updatedUser : u)),
+          };
+        });
       },
 
       register: (userData) => {
