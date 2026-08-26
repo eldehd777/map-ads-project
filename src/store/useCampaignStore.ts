@@ -121,6 +121,7 @@ export const useCampaignStore = create<CampaignState>()(
     }),
     {
       name: "campaign-store",
+      version: 1, // 버전 업데이트: 기존에 저장된 '빈 배열' 스토리지를 초기화하고 새 데이터를 불러옵니다.
     }
   )
 );
